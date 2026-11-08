@@ -1,3 +1,11 @@
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/banner_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/images/banner_light.svg">
+    <img alt="Pypeline logo" src="docs/images/banner_light.svg" width="300px">
+  </picture>
+</div>
+
 <h1 align='center'>
     Pypeline: All the boilerplate code you need to make a pipeline in python simplified
 </h1>
