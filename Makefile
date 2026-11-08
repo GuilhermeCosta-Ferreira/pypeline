@@ -15,6 +15,7 @@
 
     diagram:
 		poetry run classpy sync
+		plantuml -tpng docs/class.puml
 
     dev:
 	    make diagram formatt lint test
