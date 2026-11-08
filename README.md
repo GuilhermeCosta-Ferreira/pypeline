@@ -7,7 +7,7 @@
 </div>
 
 <h1 align='center'>
-    Pypeline: All the boilerplate code you need to make a pipeline in python simplified
+    Pypeline: Boilerplate-free pipelines in pure Python
 </h1>
 
 <div align="center">
@@ -17,3 +17,9 @@
     <img src="https://shields.io/badge/code_style-black-black?&style=flat" alt="Formatter">
     <img src="https://shields.io/badge/linting-pylint-yellow?&style=flat" alt="Linter">
 </div>
+
+---
+
+# Introduction
+
+Did you ever need to make a pipeline project for your master thesis, side-hustle or any other project? Most of the time pipelines are straight forward: data comes as input and steps will be applied in succession and you get an output. However, most of the time you code one, after 2 months of changes you need help from AI or god to just make a change your suppervisor asked for. You just wish you had made it easier to work with. If this is you now, or soon, this is the package for you. All the boilerplate code you need is imported from here and you just need to focus on implementing the steps and data actors you need. Optimizations? We got you!
