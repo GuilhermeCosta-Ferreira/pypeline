@@ -29,7 +29,7 @@ endlegend
 
 ' 0 = hide dependency lines
 ' 1 = show dependency lines
-!$SHOW_DEPENDENCIES = 0
+!$SHOW_DEPENDENCIES = 1
 
 
 '=============================================================================='
@@ -43,6 +43,71 @@ package "Service Layer" #E8F5E9 {
 'Model Domain'
 '=============================================================================='
 package "Model Domain Layer" #FFF8E1 {
+    abstract class Step <<implemented>> {
+        + apply(In): Out
+        + run(In): Out
+        + validate_input(In): None
+        + validate_output(Out): None
+    }
+
+    package "Registries"{
+        class Registry <<implemented>> {
+            - _entries: ClassVar[dict[str, type]]
+
+            + register(key: str): Callable[[type[T]], type[T]]
+            + get(key: str): T
+            + get_type(key: str): type[T]
+            + known_keys(): set[str]
+        }
+
+        class StepRegistry <<implemented>> {
+        }
+        StepRegistry --|> Registry
+    }
+
+    package "Protocol"{
+        class ProtocolDraft <<partial>> {
+            + data: dict
+        }
+
+
+        class Protocol <<partial>> {
+            + global_settings: GlobalSettings
+            + input_settings: InputSettings
+            + output_settings: OutputSettings
+            + step_settings: StepSettings
+        }
+        Protocol --> GlobalSettings
+        Protocol --> InputSettings
+        Protocol --> OutputSettings
+        Protocol --> StepSettings
+
+
+        class ProtocolBuilder <<partial>> {
+            + build(draft: ProtocolDraft): Protocol
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            ProtocolBuilder ..> ProtocolDraft
+            ProtocolBuilder ..> Protocol
+        !endif
+
+
+        class GlobalSettings <<planned>> {
+        }
+
+
+        class InputSettings <<planned>> {
+        }
+
+
+        class OutputSettings <<planned>> {
+        }
+
+
+        class StepSettings <<planned>> {
+        }
+
+    }
 }
 
 
