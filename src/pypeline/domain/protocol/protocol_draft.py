@@ -4,9 +4,8 @@
 from dataclasses import dataclass
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================
 @dataclass
-class ProtocolDraft:...
+class ProtocolDraft: ...
