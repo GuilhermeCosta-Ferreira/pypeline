@@ -27,3 +27,17 @@ dev = [
     "pyright (>=1.1.414,<2.0.0)",
     "ruff (>=0.17.4,<0.18.0)"
 ]
+
+[tool.docformatter]
+recursive = true
+in-place = true
+wrap-summaries = 88
+wrap-descriptions = 88
+black = true
+
+[tool.pylint."messages control"]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+]
