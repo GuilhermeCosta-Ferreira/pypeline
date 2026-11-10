@@ -32,6 +32,12 @@ class Registry[T]:
 
     @classmethod
     def register(cls, key: str) -> Callable[[type[T]], type[T]]:
+        """Class decorator that adds the decorated class to this registry under `key`.
+
+        Raises:
+            ValueError: If `key` is already registered in this registry.
+        """
+
         def decorator(target_cls: type[T]) -> type[T]:
             # 1. Make sure there is a new key
             if key in cls._entries:

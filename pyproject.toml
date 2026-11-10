@@ -25,7 +25,8 @@ dev = [
     "pytest (>=9.2.0,<10.0.0)",
     "docformatter (>=1.7.8,<2.0.0)",
     "pyright (>=1.1.414,<2.0.0)",
-    "ruff (>=0.17.4,<0.18.0)"
+    "ruff (>=0.17.4,<0.18.0)",
+    "interrogate (>=1.7.0,<2.0.0)"
 ]
 
 [tool.docformatter]
@@ -41,3 +42,12 @@ disable = [
     "missing-class-docstring",
     "missing-function-docstring",
 ]
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-module = true
+ignore-private = true
+ignore-semiprivate = true
+ignore-magic = true
+ignore-nested-functions = true
+fail-under = 0
