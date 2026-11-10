@@ -1,13 +1,11 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from dataclasses import dataclass
-
+from ..step import Step
 from .registry import Registry
 
 
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-@dataclass
-class StepRegistry(Registry): ...
+class StepRegistry(Registry[Step]): ...
