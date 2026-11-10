@@ -94,15 +94,15 @@ package "Model Domain Layer" #FFF8E1 {
         !endif
 
 
-        class GlobalSettings <<partial>> {
+        class GlobalSettings <<implemented>> {
             + protocol_name: str
             + check_scope: bool
         }
 
 
-        class InputSettings <<partial>> {
+        class InputSettings <<implemented>> {
             + data_dirs: list[Path]
-            + data_fmt: list[str]
+            + data_fmts: list[str]
         }
 
 
