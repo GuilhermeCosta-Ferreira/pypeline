@@ -44,6 +44,8 @@ package "Service Layer" #E8F5E9 {
 '=============================================================================='
 package "Model Domain Layer" #FFF8E1 {
     abstract class Step <<implemented>> {
+        + scope: Literal["single", "global"]
+
         + apply(In): Out
         + run(In): Out
         + validate_input(In): None
@@ -66,21 +68,21 @@ package "Model Domain Layer" #FFF8E1 {
     }
 
     package "Protocol"{
-        class ProtocolDraft <<partial>> {
+        class ProtocolDraft <<implemented>> {
             + data: dict
         }
 
 
-        class Protocol <<partial>> {
+        class Protocol <<implemented>> {
             + global_settings: GlobalSettings
             + input_settings: InputSettings
             + output_settings: OutputSettings
-            + step_settings: StepSettings
+            + steps: list[Step]
         }
         Protocol --> GlobalSettings
         Protocol --> InputSettings
         Protocol --> OutputSettings
-        Protocol --> StepSettings
+        Protocol o-- Step
 
 
         class ProtocolBuilder <<partial>> {
@@ -92,21 +94,22 @@ package "Model Domain Layer" #FFF8E1 {
         !endif
 
 
-        class GlobalSettings <<planned>> {
+        class GlobalSettings <<partial>> {
+            + protocol_name: str
+            + check_scope: bool
         }
 
 
-        class InputSettings <<planned>> {
+        class InputSettings <<partial>> {
+            + data_dirs: list[Path]
+            + data_fmt: list[str]
         }
 
 
-        class OutputSettings <<planned>> {
+        class OutputSettings <<partial>> {
+            + out_dirs: list[Path]
+            + out_fmt: list[str]
         }
-
-
-        class StepSettings <<planned>> {
-        }
-
     }
 }
 

@@ -1,0 +1,24 @@
+global:
+  protocol_name: "preprocessing_v1"
+  check_scope: True
+
+input:
+  data_dirs: [
+    "data/model_1",
+    "data/model_2",
+  ]
+
+  data_fmt: [
+    ".zarr",
+    ".nii.gz"
+  ]
+
+steps:
+  normalize: {}
+  threshold:
+    threshold_1: 5
+    threshold_2: 10
+
+output:
+  out_dir: "out/"
+  out_fmt: ".nii"
