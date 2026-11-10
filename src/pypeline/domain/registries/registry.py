@@ -76,3 +76,25 @@ class Registry[T]:
     def known_keys(cls) -> set[str]:
         """Returns all of the known registered keys."""
         return set(cls._entries)
+
+    @classmethod
+    def key_of(cls, target: T | type[T]) -> str:
+        """Return the key `target` was registered under; the reverse of `get_type`.
+
+        Args:
+            target: A registered class or an instance of one. Only an exact match
+                counts: a subclass of a registered class is not found unless it was
+                registered itself.
+
+        Raises:
+            ValueError: If the class of `target` is not registered in this registry.
+        """
+        # 1. Deals with type vs instance
+        target_cls = target if isinstance(target, type) else type(target)
+
+        # 2. Loops to find it (if exists)
+        for key, registered in cls._entries.items():
+            if registered is target_cls:
+                return key
+
+        raise ValueError(f"{target_cls.__name__} is not registered in {cls.__name__}")
