@@ -8,6 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.14,<3.15"
 dependencies = [
+    "dacite (>=1.9.2,<2.0.0)"
 ]
 
 [tool.poetry]
