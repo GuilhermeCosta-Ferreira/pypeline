@@ -7,6 +7,7 @@ from ..step import Step
 from .settings import InputSettings
 from .settings import OutputSettings
 from .settings import GlobalSettings
+from ..registries import StepRegistry
 
 
 # ================================================================
@@ -18,3 +19,7 @@ class Protocol:
     input_settings: InputSettings
     output_settings: OutputSettings
     steps: list[Step]
+
+    @property
+    def steps_names(self) -> list[str]:
+        return [StepRegistry.key_of(step) for step in self.steps]

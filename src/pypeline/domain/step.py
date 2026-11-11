@@ -1,7 +1,7 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, final, ClassVar
 from abc import ABC, abstractmethod
 
@@ -25,6 +25,7 @@ class Step[InputClass, OutputClass](ABC):
             (e.g. normalising against the dataset mean).
     """
     scope: ClassVar[StepScope] = "single"
+    requires: ClassVar[list[type[Step]]] = []
 
     @final
     def apply(self, data: InputClass) -> OutputClass:

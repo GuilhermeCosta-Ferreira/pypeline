@@ -1,8 +1,10 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from pathlib import Path
 from dataclasses import dataclass
+
+from .source import Source, FormatsMap
+
 
 
 # ================================================================
@@ -10,5 +12,5 @@ from dataclasses import dataclass
 # ================================================================
 @dataclass(frozen=True)
 class InputSettings:
-    data_dirs: list[Path]
-    data_fmts: list[str]
+    load_as: FormatsMap
+    sources: list[Source]

@@ -98,3 +98,8 @@ class Registry[T]:
                 return key
 
         raise ValueError(f"{target_cls.__name__} is not registered in {cls.__name__}")
+
+    @classmethod
+    def has(cls, key: str) -> bool:
+        """Return whether a class is registered under `key`."""
+        return key in cls._entries

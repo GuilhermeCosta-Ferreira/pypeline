@@ -79,13 +79,10 @@ package "Model Domain Layer" #FFF8E1 {
             + output_settings: OutputSettings
             + steps: list[Step]
         }
-        Protocol --> GlobalSettings
-        Protocol --> InputSettings
-        Protocol --> OutputSettings
         Protocol o-- Step
 
 
-        class ProtocolBuilder <<partial>> {
+        class ProtocolBuilder <<implemented>> {
             + build(draft: ProtocolDraft): Protocol
         }
         !if ($SHOW_DEPENDENCIES == 1)
@@ -93,23 +90,46 @@ package "Model Domain Layer" #FFF8E1 {
             ProtocolBuilder ..> Protocol
         !endif
 
+        package "Settings"{
+            class GlobalSettings <<implemented>> {
+                + protocol_name: str
+                + check_scope: bool
+            }
 
-        class GlobalSettings <<implemented>> {
-            + protocol_name: str
-            + check_scope: bool
+
+            class InputSettings <<implemented>> {
+                + load_as: FormatsMap
+                + sources: list[Source]
+            }
+            InputSettings o-- Source
+
+
+            class OutputSettings <<implemented>> {
+                + out_dir: Path
+                + fmts: FormatsMap
+                + save_all_intermediates: bool
+                + save_points: list[SavePoint]
+
+            }
+            OutputSettings o-- SavePoint
+
+
+            class SavePoint <<implemented>> {
+                + after: str
+                + occurrence: int
+                + subdir: Path | None
+                + fmts: FormatsMap
+            }
+
+
+            class Source <<implemented>> {
+            + path: Path
+            + load_as: FormatsMap
+            }
         }
-
-
-        class InputSettings <<implemented>> {
-            + data_dirs: list[Path]
-            + data_fmts: list[str]
-        }
-
-
-        class OutputSettings <<partial>> {
-            + out_dirs: list[Path]
-            + out_fmt: list[str]
-        }
+        Protocol --> GlobalSettings
+        Protocol --> InputSettings
+        Protocol --> OutputSettings
     }
 }
 

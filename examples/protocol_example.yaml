@@ -3,22 +3,37 @@ global:
   check_scope: True
 
 input:
-  data_dirs: [
-    "data/model_1",
-    "data/model_2",
-  ]
-
-  data_fmt: [
-    ".zarr",
-    ".nii.gz"
-  ]
+  fmts:
+    .h5: ndarray
+  sources:
+    - path: "data/model_1"
+      fmts:
+        .csv: Syllables
+        .h5: ndarray
+    - path: "data/model_2"
+      fmts:
+        .csv: Labels
+        .h5: DataFrame
 
 steps:
-  normalize: {}
-  threshold:
+  - name: normalize
+  - name: threshold
     threshold_1: 5
     threshold_2: 10
+  - name: normalize
 
 output:
   out_dir: "out/"
-  out_fmt: ".nii"
+  save_all_intermediates: False
+  fmts:
+    ndarray: ".nii.gz"
+    DataFrame: ".csv"
+  save_points:
+    - after: normalize
+      fmts:
+        ndarray: ".zarr"
+    - after: normalize
+      occurrence: 2
+      fmts:
+        DataFrame: ".parquet"
+      subdir: "normalize_2/"
