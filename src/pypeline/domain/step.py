@@ -1,9 +1,9 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from dataclasses import dataclass, field
-from typing import Literal, final, ClassVar
+from dataclasses import dataclass
 from abc import ABC, abstractmethod
+from typing import Literal, final, ClassVar
 
 StepScope = Literal["single", "global"]
 
@@ -24,11 +24,12 @@ class Step[InputClass, OutputClass](ABC):
             the whole collection, for steps that need every item at the same time
             (e.g. normalising against the dataset mean).
     """
+
     scope: ClassVar[StepScope] = "single"
     requires: ClassVar[list[type[Step]]] = []
 
     @final
-    def apply(self, data: InputClass) -> OutputClass:
+    def apply(self, data: InputClass) -> OutputClass | list[OutputClass]:
         """Validate, run and validate again; the only entry point for callers."""
         self.validate_input(data)
         result = self.run(data)
@@ -36,14 +37,14 @@ class Step[InputClass, OutputClass](ABC):
         return result
 
     @abstractmethod
-    def run(self, data: InputClass) -> OutputClass:
+    def run(self, data: InputClass) -> OutputClass | list[OutputClass]:
         """Transform the input into the step's output."""
         raise NotImplementedError()
 
     @abstractmethod
-    def validate_input(self, input: InputClass) -> None:
+    def validate_input(self, data: InputClass) -> None:
         """Check that the input is acceptable before ``run`` is called."""
 
     @abstractmethod
-    def validate_output(self, output: OutputClass) -> None:
+    def validate_output(self, output: OutputClass | list[OutputClass]) -> None:
         """Check that ``run`` produced an acceptable result."""
