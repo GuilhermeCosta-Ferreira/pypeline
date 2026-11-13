@@ -140,6 +140,22 @@ package "Model Domain Layer" #FFF8E1 {
         Protocol --> InputSettings
         Protocol --> OutputSettings
     }
+
+
+    class Runner <<partial>> {
+        + saver: Saver
+
+        + run(protocol: Protocol, Input: Any): Any
+    }
+    Runner --> Saver
+
+
+    interface Saver <<planned>> {
+        + save(data: object, point: SavePoint): None
+    }
+    !if ($SHOW_DEPENDENCIES == 1)
+        Saver ..>  SavePoint
+    !endif
 }
 
 

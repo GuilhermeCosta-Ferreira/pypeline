@@ -1,7 +1,11 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+import typing
+
 from dataclasses import dataclass
+
+from .protocol import SavePoint
 
 
 
@@ -9,4 +13,5 @@ from dataclasses import dataclass
 # 1. Section: Functions
 # ================================================================
 @dataclass
-class ProtocolRunner:...
+class Saver(typing.Protocol):
+    def save(self, data: object, point: SavePoint) -> None: ...
