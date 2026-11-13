@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from .source import Source, FormatsMap
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================

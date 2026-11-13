@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 from .save_point import SavePoint, FormatsMap
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================

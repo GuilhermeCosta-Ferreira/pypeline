@@ -7,7 +7,6 @@ from dataclasses import dataclass, field
 FormatsMap = dict[str, str]
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================
