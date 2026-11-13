@@ -44,7 +44,8 @@ package "Service Layer" #E8F5E9 {
 '=============================================================================='
 package "Model Domain Layer" #FFF8E1 {
     abstract class Step <<implemented>> {
-        + scope: Literal["single", "global"]
+        + scope: ClassVar[StepScope]
+        + requires: ClassVar[list[type[Step]]]
 
         + apply(In): Out
         + run(In): Out
@@ -60,6 +61,8 @@ package "Model Domain Layer" #FFF8E1 {
             + get(key: str): T
             + get_type(key: str): type[T]
             + known_keys(): set[str]
+            + key_of(target: T | type[T]): str
+            + has(key: str): bool
         }
 
         class StepRegistry <<implemented>> {
@@ -78,16 +81,22 @@ package "Model Domain Layer" #FFF8E1 {
             + input_settings: InputSettings
             + output_settings: OutputSettings
             + steps: list[Step]
+            + steps_names(self): list[str]
         }
         Protocol o-- Step
 
 
         class ProtocolBuilder <<implemented>> {
             + build(draft: ProtocolDraft): Protocol
+
+            + build_section(cls: Any, data: dict, section: str): Any
+            + build_steps(raw_steps: list[dict]): list[Step]
+            + validate_protocol(protocol: Protocol): None
         }
         !if ($SHOW_DEPENDENCIES == 1)
             ProtocolBuilder ..> ProtocolDraft
             ProtocolBuilder ..> Protocol
+            ProtocolBuilder ..> Step
         !endif
 
         package "Settings"{
