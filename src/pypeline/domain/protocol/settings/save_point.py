@@ -4,7 +4,7 @@
 from pathlib import Path
 from dataclasses import dataclass, field
 
-FormatsMap = dict[str, str]
+from pypeline.types import FormatsMap
 
 
 # ================================================================
