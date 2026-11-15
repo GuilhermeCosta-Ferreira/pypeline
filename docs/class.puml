@@ -145,17 +145,25 @@ package "Model Domain Layer" #FFF8E1 {
     class Runner <<partial>> {
         + saver: Saver
 
-        + run(protocol: Protocol, Input: Any): Any
+        + run(protocol: Protocol): Any
     }
     Runner --> Saver
+    Runner --> TempStorage
 
 
-    interface Saver <<planned>> {
+    interface Saver <<implemented>> {
         + save(data: object, point: SavePoint): None
     }
     !if ($SHOW_DEPENDENCIES == 1)
         Saver ..>  SavePoint
     !endif
+
+
+    interface TempStorage <<implemented>> {
+        + def put(key: str, data: Any): None
+        + def get(key: str): Any
+        + def clear(): None
+    }
 }
 
 

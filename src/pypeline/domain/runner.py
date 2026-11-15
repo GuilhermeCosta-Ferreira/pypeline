@@ -5,7 +5,9 @@ from typing import Any
 from dataclasses import dataclass
 
 from .saver import Saver
+from .loader import Loader
 from .protocol import Protocol
+from .temp_storage import TempStorage
 
 
 
@@ -14,7 +16,9 @@ from .protocol import Protocol
 # ================================================================
 @dataclass
 class Runner:
+    loader: Loader
     saver: Saver
+    temp_storage: TempStorage
 
-    def run(self, data: Any, protocol: Protocol) -> Any:
+    def run(self, protocol: Protocol) -> Any:
         pass
