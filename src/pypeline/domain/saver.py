@@ -5,8 +5,7 @@ import typing
 
 from dataclasses import dataclass
 
-from .protocol import SavePoint
-
+from .pipeline import SavePoint
 
 
 # ================================================================

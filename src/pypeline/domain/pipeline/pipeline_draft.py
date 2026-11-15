@@ -8,6 +8,5 @@ from dataclasses import dataclass
 # 1. Section: Functions
 # ================================================================
 @dataclass(frozen=True)
-class GlobalSettings:
-    protocol_name: str
-    check_scope: bool
+class PipelineDraft:
+    data: dict

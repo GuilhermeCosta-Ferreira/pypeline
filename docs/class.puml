@@ -70,38 +70,38 @@ package "Model Domain Layer" #FFF8E1 {
         StepRegistry --|> Registry
     }
 
-    package "Protocol"{
-        class ProtocolDraft <<implemented>> {
+    package "Pipeline"{
+        class PipelineDraft <<implemented>> {
             + data: dict
         }
 
 
-        class Protocol <<implemented>> {
+        class Pipeline <<implemented>> {
             + global_settings: GlobalSettings
             + input_settings: InputSettings
             + output_settings: OutputSettings
             + steps: list[Step]
             + steps_names(self): list[str]
         }
-        Protocol o-- Step
+        Pipeline o-- Step
 
 
-        class ProtocolBuilder <<implemented>> {
-            + build(draft: ProtocolDraft): Protocol
+        class PipelineBuilder <<implemented>> {
+            + build(draft: PipelineDraft): Pipeline
 
             + build_section(cls: Any, data: dict, section: str): Any
             + build_steps(raw_steps: list[dict]): list[Step]
-            + validate_protocol(protocol: Protocol): None
+            + validate_pipeline(pipeline: Pipeline): None
         }
         !if ($SHOW_DEPENDENCIES == 1)
-            ProtocolBuilder ..> ProtocolDraft
-            ProtocolBuilder ..> Protocol
-            ProtocolBuilder ..> Step
+            PipelineBuilder ..> PipelineDraft
+            PipelineBuilder ..> Pipeline
+            PipelineBuilder ..> Step
         !endif
 
         package "Settings"{
             class GlobalSettings <<implemented>> {
-                + protocol_name: str
+                + pipeline_name: str
                 + check_scope: bool
             }
 
@@ -136,16 +136,16 @@ package "Model Domain Layer" #FFF8E1 {
             + load_as: FormatsMap
             }
         }
-        Protocol --> GlobalSettings
-        Protocol --> InputSettings
-        Protocol --> OutputSettings
+        Pipeline --> GlobalSettings
+        Pipeline --> InputSettings
+        Pipeline --> OutputSettings
     }
 
 
     class Runner <<partial>> {
         + saver: Saver
 
-        + run(protocol: Protocol): Any
+        + run(pipeline: Pipeline): Any
     }
     Runner --> Saver
     Runner --> TempStorage

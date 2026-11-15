@@ -1,5 +1,5 @@
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-class ProtocolError(ValueError):
-    """The protocol file is malformed."""
+class PipelineError(ValueError):
+    """The pipeline file is malformed."""

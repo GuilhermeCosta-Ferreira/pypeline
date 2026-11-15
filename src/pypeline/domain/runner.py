@@ -6,9 +6,8 @@ from dataclasses import dataclass
 
 from .saver import Saver
 from .loader import Loader
-from .protocol import Protocol
+from .pipeline import Pipeline
 from .temp_storage import TempStorage
-
 
 
 # ================================================================
@@ -20,5 +19,5 @@ class Runner:
     saver: Saver
     temp_storage: TempStorage
 
-    def run(self, protocol: Protocol) -> Any:
+    def run(self, pipeline: Pipeline) -> Any:
         pass

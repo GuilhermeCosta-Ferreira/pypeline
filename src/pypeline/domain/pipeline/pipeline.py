@@ -14,7 +14,7 @@ from ..registries import StepRegistry
 # 1. Section: Functions
 # ================================================================
 @dataclass(frozen=True)
-class Protocol:
+class Pipeline:
     global_settings: GlobalSettings
     input_settings: InputSettings
     output_settings: OutputSettings

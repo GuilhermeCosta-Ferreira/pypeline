@@ -1,5 +1,5 @@
 global:
-  protocol_name: "preprocessing_v1"
+  pipeline_name: "preprocessing_v1"
   check_scope: True
 
 input:
