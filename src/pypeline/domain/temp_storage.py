@@ -1,18 +1,15 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-import typing
+from pathlib import Path
+from typing import Protocol
 
-from typing import Any
-
+from .actors import ActorRecord
 
 
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-class TempStorage(typing.Protocol):
-    def put(self, key: str, data: Any) -> None: ...
-
-    def get(self, key: str) -> Any: ...
-
+class TempStorage(Protocol):
+    def put(self, actor: ActorRecord) -> Path: ...
     def clear(self) -> None: ...
