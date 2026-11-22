@@ -194,7 +194,20 @@ package "Model Domain Layer" #FFF8E1 {
     }
     !if ($SHOW_DEPENDENCIES == 1)
         TempStorage ..>  ActorRecord
-        Saver ..>  SavePoint
+    !endif
+
+
+    class Actors <<implemented>> {
+        + table: pl.DataFrame
+
+        + from_files(cls, files: FilesMap): Actors
+        + from_records(cls, records: list[ActorRecord]): Actors
+
+        + add(step_idx: int, entries: list[tuple[str, Path]]): None
+        + paths(class_name: str | None = None): list[Path]
+    }
+    !if ($SHOW_DEPENDENCIES == 1)
+        Actors ..>  ActorRecord
     !endif
 }
 
