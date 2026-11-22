@@ -11,3 +11,4 @@ from dataclasses import dataclass
 class GlobalSettings:
     pipeline_name: str
     check_scope: bool
+    save_all_intermediates: bool

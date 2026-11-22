@@ -1,6 +1,6 @@
-.PHONY: formatt lint test diagram status dev
+.PHONY: format lint test diagram status dev
 
-formatt:
+format:
 	-poetry run docformatter src/pypeline
 	-poetry run docformatter tests
 	poetry run black src/pypeline
@@ -26,4 +26,4 @@ status:
 	@echo "\n== Lint ==" && poetry run pylint src/pypeline --reports=n || true
 
 dev:
-	$(MAKE) diagram formatt lint test
+	$(MAKE) diagram format lint test
