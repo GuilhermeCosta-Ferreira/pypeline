@@ -1,9 +1,13 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+from typing import Any
+
 import polars as pl
 
 from pathlib import Path
+from dataclasses import dataclass
+from collections.abc import Iterator
 
 from pypeline.types import FilesMap
 
@@ -11,7 +15,7 @@ INPUT_STEP: int = -1
 SCHEMA: pl.Schema = pl.Schema(
     {
         "path": pl.String,
-        "step_idx": pl.UInt32,
+        "step_idx": pl.Int32,
         "class_name": pl.String,
     }
 )
@@ -24,11 +28,25 @@ class Actors:
     def __init__(self) -> None:
         self.table = pl.DataFrame(schema=SCHEMA)
 
+    def __iter__(self) -> Iterator[ActorRecord]:
+        for row in self.table.iter_rows(named=True):
+            yield ActorRecord(Path(row["path"]), row["step_idx"], row["class_name"])
+
     @classmethod
     def from_files(cls, files: FilesMap) -> Actors:
         actors = cls()
         actors.table = pl.DataFrame(
             [(str(path), INPUT_STEP, actor) for actor, path in files],
+            schema=SCHEMA,
+            orient="row",
+        )
+        return actors
+
+    @classmethod
+    def from_records(cls, records: list[ActorRecord]) -> Actors:
+        actors = cls()
+        actors.table = pl.DataFrame(
+            [(str(r.path), r.step_idx, r.class_name) for r in records],
             schema=SCHEMA,
             orient="row",
         )
@@ -45,9 +63,29 @@ class Actors:
             schema=SCHEMA,
             orient="row",
         )
-        self._table = pl.concat([self._table, rows])
+        self.table = pl.concat([self.table, rows])
+
+    def paths(self, class_name: str | None = None) -> list[Path]:
+        rows = (
+            self.table
+            if class_name is None
+            else self.table.filter(pl.col("class_name") == class_name)
+        )
+        latest = rows.filter(pl.col("step_idx") == pl.col("step_idx").max().over("class_name"))
+        return [Path(p) for p in latest["path"]]
 
 
+
+# ================================================================
+# 3. Section: Unit Class
+# ================================================================
+@dataclass(frozen=True)
+class ActorRecord:
+    path: Path | None
+    step_idx: int
+    class_name: str
+
+    object: Any | None = None
 
 
 """

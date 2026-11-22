@@ -1,19 +1,18 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-import typing
+from typing import Protocol
 
-from typing import Any
-from pathlib import Path
-from dataclasses import dataclass
+from pypeline.types import FilesMap
 
-from pypeline.types import FormatsMap
+from .actors import ActorRecord
+from .pipeline.settings import InputSettings
 
 
 
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-@dataclass
-class Loader(typing.Protocol):
-    def load(self, path: Path, load_as: FormatsMap) -> dict[str, Any]: ...
+class Loader(Protocol):
+    def load(self, actor: ActorRecord) -> ActorRecord: ...
+    def files(self, input_settings: InputSettings) -> FilesMap: ...

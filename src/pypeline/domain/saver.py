@@ -1,10 +1,10 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-import typing
-
+from typing import Protocol
 from dataclasses import dataclass
 
+from .actors import ActorRecord
 from .pipeline import SavePoint
 
 
@@ -12,5 +12,5 @@ from .pipeline import SavePoint
 # 1. Section: Functions
 # ================================================================
 @dataclass
-class Saver(typing.Protocol):
-    def save(self, data: object, point: SavePoint) -> None: ...
+class Saver(Protocol):
+    def save(self, output: ActorRecord, point: SavePoint) -> None: ...
