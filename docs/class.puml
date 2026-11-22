@@ -209,6 +209,15 @@ package "Model Domain Layer" #FFF8E1 {
     !if ($SHOW_DEPENDENCIES == 1)
         Actors ..>  ActorRecord
     !endif
+
+
+    class ActorRecord <<implemented>> {
+        + path: Path | None
+        + step_idx: int
+        + class_name: str
+
+        + object: Any | None = None
+    }
 }
 
 
