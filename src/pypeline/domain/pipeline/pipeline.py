@@ -45,18 +45,6 @@ class Pipeline:
         return points
 
     @cached_property
-    def has_only_global(self) -> bool:
-        return len(self._gloabl_idx) == len(self.steps_scope)
-
-    @cached_property
-    def has_only_single(self) -> bool:
-        return len(self._gloabl_idx) == 0
-
-    @cached_property
-    def _gloabl_idx(self) -> list[int]:
-        return [i for i, scope in enumerate(self.steps_scope) if scope == "global"]
-
-    @cached_property
     def waves(self) -> list[Wave]:
         return build_waves(self.steps)
 
