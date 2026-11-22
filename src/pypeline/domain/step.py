@@ -30,15 +30,23 @@ class Step[InputClass, OutputClass](ABC):
 
     scope: ClassVar[StepScope] = "single"
     requires: ClassVar[list[type[Step]]] = []
-    mutable: ClassVar[bool] = True
+    mutable: ClassVar[bool] = True # delets input
 
     @property
     def input_type(self) -> type:
         return self.io_types()[0]
 
     @property
+    def input_name(self) -> str:
+        return self.io_types()[0].__name__
+
+    @property
     def output_type(self) -> type:
         return self.io_types()[1]
+
+    @property
+    def output_name(self) -> str:
+        return self.io_types()[1].__name__
 
 
     # ──────────────────────────────────────────────────────

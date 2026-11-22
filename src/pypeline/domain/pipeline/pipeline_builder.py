@@ -1,9 +1,8 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+from typing import Any
 from pathlib import Path
-from types import get_original_bases
-from typing import Any, get_args, get_origin
 from dacite import Config, DaciteError, from_dict
 
 from pypeline.errors import PipelineError
@@ -160,13 +159,19 @@ def _validate_input_flow(pipeline: Pipeline) -> None:
 
     # 2. Walk the steps, adding what each one produces
     for i, step in enumerate(pipeline.steps):
-        needed, produced = _io_types(type(step))
-        if needed.__name__ not in available:
+        needed = step.input_name
+        produced = step.output_name
+        if needed not in available:
             raise PipelineError(
-                f"[steps[{i}]] {StepRegistry.key_of(step)!r} needs {needed.__name__}, "
+                f"[steps[{i}]] {StepRegistry.key_of(step)!r} needs {needed}, "
                 f"but only {available} are available at this point"
             )
-        available.extend(p.__name__ for p in produced)
+
+        # 3. Removes inputs from consideration when mutable
+        if step.mutable:
+            available = [a for a in available if a != needed]
+
+        available.append(produced)
 
 
 def _validate_save_points(pipeline: Pipeline) -> None:
@@ -182,16 +187,3 @@ def _validate_save_points(pipeline: Pipeline) -> None:
                 f"[output.save_points[{i}]] {point.after!r} occurrence {point.occurrence} "
                 f"out of range (1-{count})"
             )
-
-
-def _io_types(step_cls: type[Step]) -> tuple[type, list[type]]:
-    """Read a step's input and output types from its direct `Step[InputClass,
-    OutputClass]` base."""
-    for base in get_original_bases(step_cls):
-        if get_origin(base) is Step:
-            inp, out = get_args(base)
-            outs = get_args(out) if get_origin(out) is tuple else (out,)
-            return get_origin(inp) or inp, [get_origin(t) or t for t in outs]
-    raise PipelineError(
-        f"{step_cls.__name__} does not declare Step[InputClass, OutputClass]"
-    )
