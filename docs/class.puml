@@ -153,88 +153,89 @@ package "Model Domain Layer" #FFF8E1 {
         Pipeline --> InputSettings
         Pipeline --> OutputSettings
         Pipeline o-- SavePoint
+
+
+        class Wave <<implemented>> {
+            + single_steps: list[tuple[int, Step]]
+            + global_steps: list[tuple[int, Step]]
+        }
+        Wave o-- Step
+        Pipeline o-- Wave
     }
 
+    package "Runner"{
+        class Runner <<implemented>> {
+            + saver: Saver
+            + loader: Loader
+            + temp_storage: TempStorage
 
-    class Runner <<implemented>> {
-        + saver: Saver
-        + loader: Loader
-        + temp_storage: TempStorage
+            + run(pipeline: Pipeline): Any
+            + run_singles(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
+            + run_globals(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
+            + run_item(wave: Wave, pipeline: Pipeline, actor: ActorRecord): list[ActorRecord]
+            + store(actor: ActorRecord): ActorRecord
+        }
+        Runner --> Saver
+        Runner --> TempStorage
+        Runner --> Loader
+        !if ($SHOW_DEPENDENCIES == 1)
+            Runner ..>  Actors
+            Runner ..>  ActorRecord
+        !endif
 
-        + run(pipeline: Pipeline): Any
-        + run_singles(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
-        + run_globals(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
-        + run_item(wave: Wave, pipeline: Pipeline, actor: ActorRecord): list[ActorRecord]
-        + store(actor: ActorRecord): ActorRecord
+
+        interface Saver <<implemented>> {
+            + save(output: ActorRecord, point: SavePoint): None
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Saver ..>  ActorRecord
+            Saver ..>  SavePoint
+        !endif
+
+
+        interface TempStorage <<implemented>> {
+            + def put(actor: ActorRecord): Path
+            + def clear(): None
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            TempStorage ..>  ActorRecord
+        !endif
+
+
+        interface Loader <<implemented>> {
+            + load(actor: ActorRecord): ActorRecord
+            + files(input_settings: InputSettings): FilesMap
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Loader ..>  ActorRecord
+            Loader ..>  InputSettings
+        !endif
+
+
+        class Actors <<implemented>> {
+            + table: pl.DataFrame
+
+            + from_files(cls, files: FilesMap): Actors
+            + from_records(cls, records: list[ActorRecord]): Actors
+
+            + add(step_idx: int, entries: list[tuple[str, Path]]): None
+            + paths(class_name: str | None = None): list[Path]
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Actors ..>  ActorRecord
+        !endif
+
+
+        class ActorRecord <<implemented>> {
+            + path: Path | None
+            + step_idx: int
+            + class_name: str
+
+            + object: Any | None = None
+        }
     }
-    Runner --> Saver
-    Runner --> TempStorage
-    Runner --> Loader
     !if ($SHOW_DEPENDENCIES == 1)
-        Runner ..>  Actors
         Runner ..>  Pipeline
-        Runner ..>  ActorRecord
-    !endif
-
-
-    interface Saver <<implemented>> {
-        + save(output: ActorRecord, point: SavePoint): None
-    }
-    !if ($SHOW_DEPENDENCIES == 1)
-        Saver ..>  ActorRecord
-        Saver ..>  SavePoint
-    !endif
-
-
-    interface TempStorage <<implemented>> {
-        + def put(actor: ActorRecord): Path
-        + def clear(): None
-    }
-    !if ($SHOW_DEPENDENCIES == 1)
-        TempStorage ..>  ActorRecord
-    !endif
-
-
-    interface Loader <<implemented>> {
-        + load(actor: ActorRecord): ActorRecord
-        + files(input_settings: InputSettings): FilesMap
-    }
-    !if ($SHOW_DEPENDENCIES == 1)
-        Loader ..>  ActorRecord
-        Loader ..>  InputSettings
-    !endif
-
-
-    class Actors <<implemented>> {
-        + table: pl.DataFrame
-
-        + from_files(cls, files: FilesMap): Actors
-        + from_records(cls, records: list[ActorRecord]): Actors
-
-        + add(step_idx: int, entries: list[tuple[str, Path]]): None
-        + paths(class_name: str | None = None): list[Path]
-    }
-    !if ($SHOW_DEPENDENCIES == 1)
-        Actors ..>  ActorRecord
-    !endif
-
-
-    class ActorRecord <<implemented>> {
-        + path: Path | None
-        + step_idx: int
-        + class_name: str
-
-        + object: Any | None = None
-    }
-
-
-    class Wave <<implemented>> {
-        + single_steps: list[tuple[int, Step]]
-        + global_steps: list[tuple[int, Step]]
-    }
-    Wave o-- Step
-    Pipeline o-- Wave
-    !if ($SHOW_DEPENDENCIES == 1)
         Runner ..>  Wave
     !endif
 }
