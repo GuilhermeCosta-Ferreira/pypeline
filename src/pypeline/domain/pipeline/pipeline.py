@@ -9,9 +9,8 @@ from ..step import Step, StepScope
 from .settings import InputSettings
 from .settings import OutputSettings
 from .settings import GlobalSettings
-from ..wave import Wave, build_waves
+from .wave import Wave, build_waves
 from ..registries import StepRegistry
-
 
 
 # ================================================================
@@ -23,7 +22,6 @@ class Pipeline:
     input_settings: InputSettings
     output_settings: OutputSettings
     steps: list[Step]
-
 
     # ================================================================
     # 2. Section: Cached Propeties
@@ -47,8 +45,6 @@ class Pipeline:
     @cached_property
     def waves(self) -> list[Wave]:
         return build_waves(self.steps)
-
-
 
     # ================================================================
     # 3. Section: Methods

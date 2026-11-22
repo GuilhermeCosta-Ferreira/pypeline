@@ -5,10 +5,10 @@ from dataclasses import dataclass, replace
 
 from pypeline.errors import RunnerError
 
-from .wave import Wave
 from .saver import Saver
 from .loader import Loader
-from .pipeline import Pipeline
+from ..pipeline import Pipeline
+from ..pipeline.wave import Wave
 from .temp_storage import TempStorage
 from .actors import ActorRecord, Actors
 
@@ -30,8 +30,6 @@ class Runner:
             actors = self.run_globals(wave, actors, pipeline)
 
         self.temp_storage.clear()
-
-
 
     # ================================================================
     # 2. Section: Singles and Globals
@@ -63,19 +61,20 @@ class Runner:
             # 2. Checks nothing broke
             targets = [a for a in live_actors if a.class_name == step.input_name]
             if not targets:
-                raise RunnerError(f"Global step {type(step).__name__} has no {step.input_name} to run on")
+                raise RunnerError(
+                    f"Global step {type(step).__name__} has no {step.input_name} to run on"
+                )
 
             # 3. Loads everything for this step and stores the not loaded refs
             inputs = [self.loader.load(a) for a in targets]
             others = [a for a in live_actors if a.class_name != step.input_name]
 
-
             # 4. Builds a new record
             result_record = ActorRecord(
-                path = None,
-                step_idx = idx,
-                class_name = step.output_name,
-                object = step.apply([a.object for a in inputs])
+                path=None,
+                step_idx=idx,
+                class_name=step.output_name,
+                object=step.apply([a.object for a in inputs]),
             )
 
             # 5. Applies the save point if needed
@@ -88,11 +87,12 @@ class Runner:
 
         return Actors.from_records([a for a in live_actors])
 
-
     # ──────────────────────────────────────────────────────
     # 1.1 Subsection: Helper Functions
     # ──────────────────────────────────────────────────────
-    def run_item(self, wave: Wave, pipeline: Pipeline, actor: ActorRecord) -> list[ActorRecord]:
+    def run_item(
+        self, wave: Wave, pipeline: Pipeline, actor: ActorRecord
+    ) -> list[ActorRecord]:
         # 1. we start with only one actor, but we keep all of the actors
         # that will be used for future steps in this phase
         live_actors = [self.loader.load(actor)]
@@ -106,10 +106,7 @@ class Runner:
 
                 result = step.apply(live_actor.object)
                 result_record = ActorRecord(
-                    path = None,
-                    step_idx = idx,
-                    class_name = step.output_name,
-                    object = result
+                    path=None, step_idx=idx, class_name=step.output_name, object=result
                 )
 
                 for save_point in pipeline.get_save_points_after(idx):

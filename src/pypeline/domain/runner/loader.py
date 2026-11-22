@@ -6,8 +6,7 @@ from typing import Protocol
 from pypeline.types import FilesMap
 
 from .actors import ActorRecord
-from .pipeline.settings import InputSettings
-
+from ..pipeline.settings import InputSettings
 
 
 # ================================================================

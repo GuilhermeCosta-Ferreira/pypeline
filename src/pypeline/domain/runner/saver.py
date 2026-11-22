@@ -5,7 +5,7 @@ from typing import Protocol
 from dataclasses import dataclass
 
 from .actors import ActorRecord
-from .pipeline import SavePoint
+from ..pipeline import SavePoint
 
 
 # ================================================================
