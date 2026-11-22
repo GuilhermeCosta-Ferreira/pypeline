@@ -59,7 +59,7 @@ class Runner:
         # 1. Gets all actors, but only records (initial state)
         live_actors = list(actors)
 
-        for idx, step in zip(wave.global_idx, wave.global_steps):
+        for idx, step in wave.global_steps:
             # 2. Checks nothing broke
             targets = [a for a in live_actors if a.class_name == step.input_name]
             if not targets:
@@ -97,7 +97,7 @@ class Runner:
         # that will be used for future steps in this phase
         live_actors = [self.loader.load(actor)]
 
-        for idx, step in zip(wave.single_idx, wave.single_steps):
+        for idx, step in wave.single_steps:
             next_actors = []
             for live_actor in live_actors:
                 if step.input_name != live_actor.class_name:

@@ -2,12 +2,16 @@
 # 0. Section: IMPORTS
 # ================================================================
 from dataclasses import dataclass
+from functools import cached_property
 
-from ..step import Step
+from .settings import SavePoint
+from ..step import Step, StepScope
 from .settings import InputSettings
 from .settings import OutputSettings
 from .settings import GlobalSettings
+from ..wave import Wave, build_waves
 from ..registries import StepRegistry
+
 
 
 # ================================================================
@@ -20,6 +24,46 @@ class Pipeline:
     output_settings: OutputSettings
     steps: list[Step]
 
-    @property
+
+    # ================================================================
+    # 2. Section: Cached Propeties
+    # ================================================================
+    @cached_property
     def steps_names(self) -> list[str]:
         return [StepRegistry.key_of(step) for step in self.steps]
+
+    @cached_property
+    def steps_scope(self) -> list[StepScope]:
+        return [step.scope for step in self.steps]
+
+    @cached_property
+    def save_points(self) -> dict[int, list[SavePoint]]:
+        points: dict[int, list[SavePoint]] = {}
+        for point in self.output_settings.save_points:
+            positions = [i for i, n in enumerate(self.steps_names) if n == point.after]
+            points.setdefault(positions[point.occurrence - 1], []).append(point)
+        return points
+
+    @cached_property
+    def has_only_global(self) -> bool:
+        return len(self._gloabl_idx) == len(self.steps_scope)
+
+    @cached_property
+    def has_only_single(self) -> bool:
+        return len(self._gloabl_idx) == 0
+
+    @cached_property
+    def _gloabl_idx(self) -> list[int]:
+        return [i for i, scope in enumerate(self.steps_scope) if scope == "global"]
+
+    @cached_property
+    def waves(self) -> list[Wave]:
+        return build_waves(self.steps)
+
+
+
+    # ================================================================
+    # 3. Section: Methods
+    # ================================================================
+    def get_save_points_after(self, idx: int) -> list[SavePoint]:
+        return self.save_points.get(idx, [])
