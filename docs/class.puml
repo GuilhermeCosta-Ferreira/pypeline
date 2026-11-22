@@ -46,11 +46,18 @@ package "Model Domain Layer" #FFF8E1 {
     abstract class Step <<implemented>> {
         + scope: ClassVar[StepScope]
         + requires: ClassVar[list[type[Step]]]
+        + mutable: ClassVar[bool]
+
+        + input_type: Any
+        + input_name: str
+        + output_type: Any
+        + output_name: str
 
         + apply(In): Out
         + run(In): Out
         + validate_input(In): None
         + validate_output(Out): None
+        + io_types()
     }
 
     package "Registries"{
@@ -142,7 +149,7 @@ package "Model Domain Layer" #FFF8E1 {
     }
 
 
-    class Runner <<partial>> {
+    class Runner <<implemented>> {
         + saver: Saver
 
         + run(pipeline: Pipeline): Any
