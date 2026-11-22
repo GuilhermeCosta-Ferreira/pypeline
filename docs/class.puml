@@ -97,7 +97,6 @@ package "Model Domain Layer" #FFF8E1 {
             + get_save_points_after(idx: int): list[SavePoint]
         }
         Pipeline o-- Step
-        Pipeline o-- Wave
 
 
         class PipelineBuilder <<implemented>> {
@@ -172,7 +171,6 @@ package "Model Domain Layer" #FFF8E1 {
     Runner --> TempStorage
     Runner --> Loader
     !if ($SHOW_DEPENDENCIES == 1)
-        Runner ..>  Wave
         Runner ..>  Actors
         Runner ..>  Pipeline
         Runner ..>  ActorRecord
@@ -197,6 +195,16 @@ package "Model Domain Layer" #FFF8E1 {
     !endif
 
 
+    interface Loader <<implemented>> {
+        + load(actor: ActorRecord): ActorRecord
+        + files(input_settings: InputSettings): FilesMap
+    }
+    !if ($SHOW_DEPENDENCIES == 1)
+        Loader ..>  ActorRecord
+        Loader ..>  InputSettings
+    !endif
+
+
     class Actors <<implemented>> {
         + table: pl.DataFrame
 
@@ -218,6 +226,17 @@ package "Model Domain Layer" #FFF8E1 {
 
         + object: Any | None = None
     }
+
+
+    class Wave <<implemented>> {
+        + single_steps: list[tuple[int, Step]]
+        + global_steps: list[tuple[int, Step]]
+    }
+    Wave o-- Step
+    Pipeline o-- Wave
+    !if ($SHOW_DEPENDENCIES == 1)
+        Runner ..>  Wave
+    !endif
 }
 
 
