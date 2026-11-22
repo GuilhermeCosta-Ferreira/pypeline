@@ -48,16 +48,16 @@ package "Model Domain Layer" #FFF8E1 {
         + requires: ClassVar[list[type[Step]]]
         + mutable: ClassVar[bool]
 
-        + input_type: Any
+        + input_type: type
         + input_name: str
-        + output_type: Any
+        + output_type: type
         + output_name: str
 
         + apply(In): Out
         + run(In): Out
         + validate_input(In): None
         + validate_output(Out): None
-        + io_types()
+        + io_types(): tuple[type, type]
     }
 
     package "Registries"{
@@ -169,7 +169,7 @@ package "Model Domain Layer" #FFF8E1 {
             + loader: Loader
             + temp_storage: TempStorage
 
-            + run(pipeline: Pipeline): Any
+            + run(pipeline: Pipeline): None
             + run_singles(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
             + run_globals(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
             + run_item(wave: Wave, pipeline: Pipeline, actor: ActorRecord): list[ActorRecord]
@@ -194,8 +194,8 @@ package "Model Domain Layer" #FFF8E1 {
 
 
         interface TempStorage <<implemented>> {
-            + def put(actor: ActorRecord): Path
-            + def clear(): None
+            + put(actor: ActorRecord): Path
+            + clear(): None
         }
         !if ($SHOW_DEPENDENCIES == 1)
             TempStorage ..>  ActorRecord
@@ -217,9 +217,6 @@ package "Model Domain Layer" #FFF8E1 {
 
             + from_files(cls, files: FilesMap): Actors
             + from_records(cls, records: list[ActorRecord]): Actors
-
-            + add(step_idx: int, entries: list[tuple[str, Path]]): None
-            + paths(class_name: str | None = None): list[Path]
         }
         !if ($SHOW_DEPENDENCIES == 1)
             Actors ..>  ActorRecord
