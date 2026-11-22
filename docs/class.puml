@@ -88,9 +88,16 @@ package "Model Domain Layer" #FFF8E1 {
             + input_settings: InputSettings
             + output_settings: OutputSettings
             + steps: list[Step]
-            + steps_names(self): list[str]
+
+            + steps_names: list[str]
+            + steps_scope: list[StepScope]
+            + save_points: dict[int, list[SavePoint]]
+            + waves: list[Wave]
+
+            + get_save_points_after(idx: int): list[SavePoint]
         }
         Pipeline o-- Step
+        Pipeline o-- Wave
 
 
         class PipelineBuilder <<implemented>> {
@@ -146,6 +153,7 @@ package "Model Domain Layer" #FFF8E1 {
         Pipeline --> GlobalSettings
         Pipeline --> InputSettings
         Pipeline --> OutputSettings
+        Pipeline o-- SavePoint
     }
 
 
