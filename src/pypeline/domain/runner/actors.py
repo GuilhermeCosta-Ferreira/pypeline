@@ -54,30 +54,8 @@ class Actors:
 
 
 
-    # ================================================================
-    # 2. Section: Methods
-    # ================================================================
-    def add(self, step_idx: int, entries: list[tuple[str, Path]]) -> None:
-        rows = pl.DataFrame(
-            [(str(path), step_idx, name) for name, path in entries],
-            schema=SCHEMA,
-            orient="row",
-        )
-        self.table = pl.concat([self.table, rows])
-
-    def paths(self, class_name: str | None = None) -> list[Path]:
-        rows = (
-            self.table
-            if class_name is None
-            else self.table.filter(pl.col("class_name") == class_name)
-        )
-        latest = rows.filter(pl.col("step_idx") == pl.col("step_idx").max().over("class_name"))
-        return [Path(p) for p in latest["path"]]
-
-
-
 # ================================================================
-# 3. Section: Unit Class
+# 2. Section: Unit Class
 # ================================================================
 @dataclass(frozen=True)
 class ActorRecord:
