@@ -173,7 +173,6 @@ package "Model Domain Layer" #FFF8E1 {
             + run_singles(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
             + run_globals(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
             + run_item(wave: Wave, pipeline: Pipeline, actor: ActorRecord): list[ActorRecord]
-            + store(actor: ActorRecord): ActorRecord
         }
         Runner --> Saver
         Runner --> TempStorage
