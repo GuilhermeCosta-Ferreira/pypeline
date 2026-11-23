@@ -241,6 +241,48 @@ package "Model Domain Layer" #FFF8E1 {
 'Adapter Layer'
 '=============================================================================='
 package "Adapter Layer" #E3F2FD {
+    class FileLoader <<implemented>> {
+        + temp_fmt: TempFileFormat
+    }
+    FileLoader --|> Loader
+    !if ($SHOW_DEPENDENCIES == 1)
+        FileLoader ..>  ActorLoaderRegistry
+        FileLoader ..>  ActorLoader
+    !endif
+
+
+    class ActorLoaderRegistry <<implemented>> {
+    }
+    ActorLoaderRegistry --|> Registry
+
+
+    interface ActorLoader <<implemented>> {
+        + formats: ClassVar[dict[str, Callable[[Path], Any]]]
+
+        + load(path: Path): Any
+    }
+
+
+    class FileTempStorage <<implemented>> {
+        + root: Path
+        + fmt: TempFileFormat
+        - _count: int
+    }
+    FileTempStorage --|> TempStorage
+    FileTempStorage --> TempFileFormat
+
+
+    interface TempFileFormat <<implemented>> {
+        + extension: ClassVar[str]
+
+        + write(obj: Any, path: Path): None
+        + read(path: Path): Any
+    }
+
+
+    class PickleFormat <<implemented>> {
+    }
+    PickleFormat --|> TempFileFormat
 }
 
 @enduml
