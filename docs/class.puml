@@ -1,0 +1,246 @@
+@startuml
+left to right direction
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor<<implemented>> #D5F5D5
+    BorderColor<<implemented>> #2E7D32
+    FontColor<<implemented>> #1B5E20
+
+    BackgroundColor<<partial>> #FFF3CD
+    BorderColor<<partial>> #B8860B
+    FontColor<<partial>> #7A5600
+
+    BackgroundColor<<planned>> #F8D7DA
+    BorderColor<<planned>> #B02A37
+    FontColor<<planned>> #842029
+
+    BackgroundColor<<external>> #E3F2FD
+    BorderColor<<external>> #1565C0
+    FontColor<<external>> #0D47A1
+}
+
+legend right
+|= Colour |
+|<#D5F5D5> Implemented |
+|<#FFF3CD> Partially implemented |
+|<#F8D7DA> Planned / not implemented |
+|<#E3F2FD> External dependency |
+endlegend
+
+' 0 = hide dependency lines
+' 1 = show dependency lines
+!$SHOW_DEPENDENCIES = 1
+
+
+'=============================================================================='
+'Service Layer'
+'=============================================================================='
+package "Service Layer" #E8F5E9 {
+}
+
+
+'=============================================================================='
+'Model Domain'
+'=============================================================================='
+package "Model Domain Layer" #FFF8E1 {
+    abstract class Step <<implemented>> {
+        + scope: ClassVar[StepScope]
+        + requires: ClassVar[list[type[Step]]]
+        + mutable: ClassVar[bool]
+
+        + input_type: type
+        + input_name: str
+        + output_type: type
+        + output_name: str
+
+        + apply(In): Out
+        + run(In): Out
+        + validate_input(In): None
+        + validate_output(Out): None
+        + io_types(): tuple[type, type]
+    }
+
+    package "Registries"{
+        class Registry <<implemented>> {
+            - _entries: ClassVar[dict[str, type]]
+
+            + register(key: str): Callable[[type[T]], type[T]]
+            + get(key: str): T
+            + get_type(key: str): type[T]
+            + known_keys(): set[str]
+            + key_of(target: T | type[T]): str
+            + has(key: str): bool
+        }
+
+        class StepRegistry <<implemented>> {
+        }
+        StepRegistry --|> Registry
+    }
+
+    package "Pipeline"{
+        class PipelineDraft <<implemented>> {
+            + data: dict
+        }
+
+
+        class Pipeline <<implemented>> {
+            + global_settings: GlobalSettings
+            + input_settings: InputSettings
+            + output_settings: OutputSettings
+            + steps: list[Step]
+
+            + steps_names: list[str]
+            + steps_scope: list[StepScope]
+            + save_points: dict[int, list[SavePoint]]
+            + waves: list[Wave]
+
+            + get_save_points_after(idx: int): list[SavePoint]
+        }
+        Pipeline o-- Step
+
+
+        class PipelineBuilder <<implemented>> {
+            + build(draft: PipelineDraft): Pipeline
+
+            + build_section(cls: Any, data: dict, section: str): Any
+            + build_steps(raw_steps: list[dict]): list[Step]
+            + validate_pipeline(pipeline: Pipeline): None
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            PipelineBuilder ..> PipelineDraft
+            PipelineBuilder ..> Pipeline
+            PipelineBuilder ..> Step
+        !endif
+
+        package "Settings"{
+            class GlobalSettings <<implemented>> {
+                + pipeline_name: str
+                + check_scope: bool
+            }
+
+
+            class InputSettings <<implemented>> {
+                + load_as: FormatsMap
+                + sources: list[Source]
+            }
+            InputSettings o-- Source
+
+
+            class OutputSettings <<implemented>> {
+                + out_dir: Path
+                + fmts: FormatsMap
+                + save_all_intermediates: bool
+                + save_points: list[SavePoint]
+
+            }
+            OutputSettings o-- SavePoint
+
+
+            class SavePoint <<implemented>> {
+                + after: str
+                + occurrence: int
+                + subdir: Path | None
+                + fmts: FormatsMap
+            }
+
+
+            class Source <<implemented>> {
+            + path: Path
+            + load_as: FormatsMap
+            }
+        }
+        Pipeline --> GlobalSettings
+        Pipeline --> InputSettings
+        Pipeline --> OutputSettings
+        Pipeline o-- SavePoint
+
+
+        class Wave <<implemented>> {
+            + single_steps: list[tuple[int, Step]]
+            + global_steps: list[tuple[int, Step]]
+        }
+        Wave o-- Step
+        Pipeline o-- Wave
+    }
+
+    package "Runner"{
+        class Runner <<implemented>> {
+            + saver: Saver
+            + loader: Loader
+            + temp_storage: TempStorage
+
+            + run(pipeline: Pipeline): None
+            + run_singles(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
+            + run_globals(wave: Wave, actors: Actors, pipeline: Pipeline): Actors
+            + run_item(wave: Wave, pipeline: Pipeline, actor: ActorRecord): list[ActorRecord]
+        }
+        Runner --> Saver
+        Runner --> TempStorage
+        Runner --> Loader
+        !if ($SHOW_DEPENDENCIES == 1)
+            Runner ..>  Actors
+            Runner ..>  ActorRecord
+        !endif
+
+
+        interface Saver <<implemented>> {
+            + save(output: ActorRecord, point: SavePoint): None
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Saver ..>  ActorRecord
+            Saver ..>  SavePoint
+        !endif
+
+
+        interface TempStorage <<implemented>> {
+            + put(actor: ActorRecord): Path
+            + clear(): None
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            TempStorage ..>  ActorRecord
+        !endif
+
+
+        interface Loader <<implemented>> {
+            + load(actor: ActorRecord): ActorRecord
+            + files(input_settings: InputSettings): FilesMap
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Loader ..>  ActorRecord
+            Loader ..>  InputSettings
+        !endif
+
+
+        class Actors <<implemented>> {
+            + table: pl.DataFrame
+
+            + from_files(cls, files: FilesMap): Actors
+            + from_records(cls, records: list[ActorRecord]): Actors
+        }
+        !if ($SHOW_DEPENDENCIES == 1)
+            Actors ..>  ActorRecord
+        !endif
+
+
+        class ActorRecord <<implemented>> {
+            + path: Path | None
+            + step_idx: int
+            + class_name: str
+
+            + object: Any | None = None
+        }
+    }
+    !if ($SHOW_DEPENDENCIES == 1)
+        Runner ..>  Pipeline
+        Runner ..>  Wave
+    !endif
+}
+
+
+'=============================================================================='
+'Adapter Layer'
+'=============================================================================='
+package "Adapter Layer" #E3F2FD {
+}
+
+@enduml

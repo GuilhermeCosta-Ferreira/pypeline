@@ -1,0 +1,40 @@
+global:
+  pipeline_name: "preprocessing_v1"
+  check_scope: True
+  save_all_intermediates: False
+
+input:
+  load_as:
+    .h5: ndarray
+  sources:
+    - path: "data/model_1"
+      load_as:
+        .csv: Syllables
+        .h5: ndarray
+    - path: "data/model_2"
+      load_as:
+        .csv: Labels
+        .h5: DataFrame
+
+steps:
+  - name: normalize
+  - name: threshold
+    threshold_1: 5
+    threshold_2: 10
+  - name: normalize
+
+output:
+  out_dir: "out/"
+  save_all_intermediates: False
+  fmts:
+    ndarray: ".nii.gz"
+    DataFrame: ".csv"
+  save_points:
+    - after: normalize
+      fmts:
+        ndarray: ".zarr"
+    - after: normalize
+      occurrence: 2
+      fmts:
+        DataFrame: ".parquet"
+      subdir: "normalize_2/"

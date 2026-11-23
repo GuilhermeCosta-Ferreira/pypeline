@@ -6,8 +6,10 @@ authors = [
     {name = "GuilhermeCF",email = "guilherme.henriquesdacostaferreira@epfl.ch"}
 ]
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.14,<3.15"
 dependencies = [
+    "dacite (>=1.9.2,<2.0.0)",
+    "polars (>=2.1.0,<3.0.0)",
 ]
 
 [tool.poetry]
@@ -16,3 +18,85 @@ packages = [{include = "pypeline", from = "src"}]
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "classpy @ git+https://github.com/GuilhermeCosta-Ferreira/ClassyPython.git",
+    "black (>=26.10.1,<27.0.0)",
+    "pylint (>=4.1.3,<5.0.0)",
+    "pytest (>=9.2.0,<10.0.0)",
+    "docformatter (>=1.7.8,<2.0.0)",
+    "pyright (>=1.1.414,<2.0.0)",
+    "ruff (>=0.17.4,<0.18.0)",
+    "interrogate (>=1.7.0,<2.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "pydoclint (>=0.12.0,<0.13.0)"
+]
+
+[tool.docformatter]
+recursive = true
+in-place = true
+wrap-summaries = 88
+wrap-descriptions = 88
+black = true
+
+[tool.pylint."messages control"]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "wrong-import-order",
+]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+markers = [
+    "unit: fast, isolated tests",
+    "integration: tests that cross layers or touch files",
+    "e2e: full pipeline runs",
+    "slow: long-running tests",
+    "regression: guards against a specific past bug",
+]
+
+[tool.coverage.run]
+source = ["pypeline"]
+branch = true
+disable_warnings = ["module-not-imported", "no-data-collected"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+exclude_also = [
+    "@abstractmethod",
+    "@(abc\\.)?abstractmethod",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "^\\s*\\.\\.\\.$",
+]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-module = true
+ignore-private = true
+ignore-semiprivate = true
+ignore-magic = true
+ignore-nested-functions = true
+fail-under = 0
+
+[tool.pydoclint]
+style = "google"
+arg-type-hints-in-docstring = false
+check-return-types = false
+check-yield-types = false
+skip-checking-short-docstrings = true
+check-arg-order = true
+check-class-attributes = false
+require-return-section-when-returning-nothing = false
+should-declare-assert-error-if-assert-statement-exists = false
+exclude = "\\.git|\\.venv|tests"
