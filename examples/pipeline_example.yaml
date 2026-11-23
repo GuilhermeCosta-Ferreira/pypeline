@@ -27,14 +27,14 @@ output:
   out_dir: "out/"
   save_all_intermediates: False
   fmts:
-    ndarray: ".nii.gz"
-    DataFrame: ".csv"
+    .nii.gz: ndarray
+    .csv: DataFrame
   save_points:
     - after: normalize
       fmts:
-        ndarray: ".zarr"
+        .zarr: ndarray
     - after: normalize
       occurrence: 2
       fmts:
-        DataFrame: ".parquet"
+        .parquet: DataFrame
       subdir: "normalize_2/"
