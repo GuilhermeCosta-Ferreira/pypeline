@@ -1,7 +1,7 @@
 [project]
 name = "pypeline"
 version = "0.1.0"
-description = ""
+description = "Boilerplate-free pipelines in pure Python"
 authors = [
     {name = "GuilhermeCF",email = "guilherme.henriquesdacostaferreira@epfl.ch"}
 ]
@@ -14,6 +14,7 @@ dependencies = [
 ]
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
+keywords = ["pipeline", "data processing", "workflow", "yaml"]
 
 [tool.poetry]
 packages = [{include = "pypeline", from = "src"}]
