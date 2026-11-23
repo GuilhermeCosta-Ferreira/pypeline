@@ -16,6 +16,7 @@ class GlobalSettings:
         check_scope: Not used yet.
         save_all_intermediates: Not used yet.
     """
+
     pipeline_name: str
     check_scope: bool
     save_all_intermediates: bool

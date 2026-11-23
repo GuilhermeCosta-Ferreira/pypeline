@@ -20,7 +20,8 @@ from .actors import ActorRecord, Actors
 # ================================================================
 @dataclass
 class Runner:
-    """Run a `Pipeline`, allowing for all optimizations and boilerplate code to be standardized across projects
+    """Run a `Pipeline`, allowing for all optimizations and boilerplate code to be
+    standardized across projects.
 
     Attributes:
         loader: Lists input files and reads actors from disk.
