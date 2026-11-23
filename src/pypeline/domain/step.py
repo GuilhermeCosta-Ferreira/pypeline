@@ -55,9 +55,10 @@ class Step[InputClass, OutputClass](ABC):
         ...     mutable = False
         ...     ...
     """
+
     scope: ClassVar[StepScope] = "single"
     requires: ClassVar[list[type[Step]]] = []
-    mutable: ClassVar[bool] = True  # delets input
+    mutable: ClassVar[bool] = True
 
     @property
     def input_type(self) -> type:
@@ -80,7 +81,17 @@ class Step[InputClass, OutputClass](ABC):
     # ──────────────────────────────────────────────────────
     @final
     def apply(self, data: InputClass) -> OutputClass:
-        """Validate, run and validate again; the only entry point for callers."""
+        """Validate the input, run the step and validate the output.
+
+        The runner calls this; call it yourself only to try a step outside a pipeline.
+
+        Args:
+            data: One actor for a single step; the list of all actors of the input
+                class for a global step.
+
+        Returns:
+            The step's output, already validated.
+        """
         self.validate_input(data)
         result = self.run(data)
         self.validate_output(result)
@@ -88,16 +99,21 @@ class Step[InputClass, OutputClass](ABC):
 
     @abstractmethod
     def run(self, data: InputClass) -> OutputClass:
-        """Transform the input into the step's output."""
+        """Transform the input into the step's output.
+
+        Args:
+            data: Input that already passed `validate_input`.
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def validate_input(self, data: InputClass) -> None:
-        """Check that the input is acceptable before ``run`` is called."""
+        """Raise an exception if `run` cannot handle `data`; return to accept it."""
 
     @abstractmethod
     def validate_output(self, output: OutputClass) -> None:
-        """Check that ``run`` produced an acceptable result."""
+        """Raise an exception if `run` returned an unacceptable `output`; return to
+        accept it."""
 
     # ──────────────────────────────────────────────────────
     # 1.2 Subsection: Helper Functions
