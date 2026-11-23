@@ -1,14 +1,14 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from dataclasses import replace, field
+from dataclasses import replace, field, dataclass
 
 from pypeline.types import FilesMap
 
 from .pickle_format import PickleFormat
 from ..domain.pipeline import InputSettings
 from .temp_file_format import TempFileFormat
-from .actor_loader_registry import ActorLoaderRegistry
+from .actor_io_registry import ActorIORegistry
 from ..domain.runner import Loader, ActorRecord, INPUT_STEP
 
 
@@ -16,6 +16,7 @@ from ..domain.runner import Loader, ActorRecord, INPUT_STEP
 # ================================================================
 # 1. Section: Functions
 # ================================================================
+@dataclass
 class FileLoader(Loader):
     temp_fmt: TempFileFormat = field(default_factory=PickleFormat)
 
@@ -24,8 +25,8 @@ class FileLoader(Loader):
             raise ValueError(f"{actor.class_name} has no path to load from")
 
         if actor.step_idx == INPUT_STEP:
-            actor_loader = ActorLoaderRegistry.get(actor.class_name)
-            object = actor_loader.load(actor.path)
+            io = ActorIORegistry.get(actor.class_name)
+            object = io.load(actor.path)
             return replace(actor, object=object)
 
         object = self.temp_fmt.read(actor.path)
