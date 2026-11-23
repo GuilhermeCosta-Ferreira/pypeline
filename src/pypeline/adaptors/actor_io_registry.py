@@ -1,12 +1,12 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from ..domain.registries import Registry
-from .actor_loader import ActorLoader
+from ..domain import Registry
+from .actor_io import ActorIO
 
 
 
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-class ActorLoaderRegistry(Registry[ActorLoader]): ...
+class ActorIORegistry(Registry[ActorIO]): ...
