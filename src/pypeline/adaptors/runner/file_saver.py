@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 
 from pypeline.types import FormatsMap
 
-from ..domain.runner import ActorRecord
-from ..domain.pipeline import SavePoint
-from .actor_io_registry import ActorIORegistry
+from ...domain.runner import ActorRecord
+from ...domain.pipeline import SavePoint
+from ..actor_io import ActorIORegistry
 
 
 # ================================================================
@@ -22,7 +22,9 @@ class FileSaver:
 
     def save(self, output: ActorRecord, point: SavePoint) -> None:
         # 1. The save point's formats win over the output section's
-        exts = extensions(point.fmts, output.class_name) or extensions(self.fmts, output.class_name)
+        exts = extensions(point.fmts, output.class_name) or extensions(
+            self.fmts, output.class_name
+        )
         if not exts:
             raise ValueError(f"No output format for {output.class_name}")
 

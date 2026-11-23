@@ -6,7 +6,6 @@ from collections.abc import Callable
 from typing import ClassVar, Any, final
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================

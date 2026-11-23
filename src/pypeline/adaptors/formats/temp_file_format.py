@@ -1,12 +1,16 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from ..domain import Registry
-from .actor_io import ActorIO
-
+from pathlib import Path
+from typing import Protocol, Any, ClassVar
 
 
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-class ActorIORegistry(Registry[ActorIO]): ...
+class TempFileFormat(Protocol):
+    extension: ClassVar[str]
+
+    def write(self, obj: Any, path: Path) -> None: ...
+
+    def read(self, path: Path) -> Any: ...

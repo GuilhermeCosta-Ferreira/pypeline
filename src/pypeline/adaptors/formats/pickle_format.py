@@ -8,7 +8,6 @@ from typing import Any, ClassVar
 from dataclasses import dataclass
 
 
-
 # ================================================================
 # 1. Section: Functions
 # ================================================================

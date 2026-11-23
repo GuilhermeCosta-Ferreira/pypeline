@@ -5,12 +5,10 @@ from dataclasses import replace, field, dataclass
 
 from pypeline.types import FilesMap
 
-from .pickle_format import PickleFormat
-from ..domain.pipeline import InputSettings
-from .temp_file_format import TempFileFormat
-from .actor_io_registry import ActorIORegistry
-from ..domain.runner import Loader, ActorRecord, INPUT_STEP
-
+from ..formats import PickleFormat, TempFileFormat
+from ...domain.pipeline import InputSettings
+from ..actor_io import ActorIORegistry
+from ...domain.runner import Loader, ActorRecord, INPUT_STEP
 
 
 # ================================================================
