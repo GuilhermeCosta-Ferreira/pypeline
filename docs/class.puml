@@ -241,62 +241,66 @@ package "Model Domain Layer" #FFF8E1 {
 'Adapter Layer'
 '=============================================================================='
 package "Adapter Layer" #E3F2FD {
-    class FileLoader <<implemented>> {
-        + temp_fmt: TempFileFormat
+    package "Runner IO"{
+        class FileLoader <<implemented>> {
+            + temp_fmt: TempFileFormat
+        }
+        FileLoader --|> Loader
+
+
+        class FileSaver <<implemented>> {
+            + out_dir: Path
+            + fmts: FormatsMap
+            + _count: int
+        }
+        FileSaver --|> Saver
+
+
+        class FileTempStorage <<implemented>> {
+            + root: Path
+            + fmt: TempFileFormat
+            - _count: int
+        }
+        FileTempStorage --|> TempStorage
     }
-    FileLoader --|> Loader
+
+
+    package "Actor IO"{
+        class ActorIORegistry <<implemented>> {
+        }
+        ActorIORegistry --|> Registry
+
+
+        interface ActorIO <<implemented>> {
+            + readers: ClassVar[dict[str, Callable[[Path], Any]]]
+            + writers: ClassVar[dict[str, Callable[[Any, Path], None]]]
+
+            + load(path: Path): Any
+            + save(obj: Any, path: Path): None
+        }
+    }
     !if ($SHOW_DEPENDENCIES == 1)
         FileLoader ..>  ActorIORegistry
         FileLoader ..>  ActorIO
-    !endif
-
-
-    class FileSaver <<implemented>> {
-        + out_dir: Path
-        + fmts: FormatsMap
-        + _count: int
-    }
-    FileSaver --|> Saver
-    !if ($SHOW_DEPENDENCIES == 1)
         FileSaver ..>  ActorIORegistry
         FileSaver ..>  ActorIO
     !endif
 
 
-    class ActorIORegistry <<implemented>> {
+    package "Temporary Formats"{
+        interface TempFileFormat <<implemented>> {
+            + extension: ClassVar[str]
+
+            + write(obj: Any, path: Path): None
+            + read(path: Path): Any
+        }
+
+
+        class PickleFormat <<implemented>> {
+        }
+        PickleFormat --|> TempFileFormat
     }
-    ActorIORegistry --|> Registry
-
-
-    interface ActorIO <<implemented>> {
-        + readers: ClassVar[dict[str, Callable[[Path], Any]]]
-        + writers: ClassVar[dict[str, Callable[[Any, Path], None]]]
-
-        + load(path: Path): Any
-        + save(obj: Any, path: Path): None
-    }
-
-
-    class FileTempStorage <<implemented>> {
-        + root: Path
-        + fmt: TempFileFormat
-        - _count: int
-    }
-    FileTempStorage --|> TempStorage
     FileTempStorage --> TempFileFormat
-
-
-    interface TempFileFormat <<implemented>> {
-        + extension: ClassVar[str]
-
-        + write(obj: Any, path: Path): None
-        + read(path: Path): Any
-    }
-
-
-    class PickleFormat <<implemented>> {
-    }
-    PickleFormat --|> TempFileFormat
 }
 
 @enduml
