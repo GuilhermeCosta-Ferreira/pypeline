@@ -246,20 +246,34 @@ package "Adapter Layer" #E3F2FD {
     }
     FileLoader --|> Loader
     !if ($SHOW_DEPENDENCIES == 1)
-        FileLoader ..>  ActorLoaderRegistry
-        FileLoader ..>  ActorLoader
+        FileLoader ..>  ActorIORegistry
+        FileLoader ..>  ActorIO
     !endif
 
 
-    class ActorLoaderRegistry <<implemented>> {
+    class FileSaver <<implemented>> {
+        + out_dir: Path
+        + fmts: FormatsMap
+        + _count: int
     }
-    ActorLoaderRegistry --|> Registry
+    FileSaver --|> Saver
+    !if ($SHOW_DEPENDENCIES == 1)
+        FileSaver ..>  ActorIORegistry
+        FileSaver ..>  ActorIO
+    !endif
 
 
-    interface ActorLoader <<implemented>> {
-        + formats: ClassVar[dict[str, Callable[[Path], Any]]]
+    class ActorIORegistry <<implemented>> {
+    }
+    ActorIORegistry --|> Registry
+
+
+    interface ActorIO <<implemented>> {
+        + readers: ClassVar[dict[str, Callable[[Path], Any]]]
+        + writers: ClassVar[dict[str, Callable[[Any, Path], None]]]
 
         + load(path: Path): Any
+        + save(obj: Any, path: Path): None
     }
 
 
