@@ -2,7 +2,6 @@
 # 0. Section: IMPORTS
 # ================================================================
 from typing import Protocol
-from dataclasses import dataclass
 
 from .actors import ActorRecord
 from ..pipeline import SavePoint
@@ -11,7 +10,6 @@ from ..pipeline import SavePoint
 # ================================================================
 # 1. Section: Functions
 # ================================================================
-@dataclass
 class Saver(Protocol):
     """Writes step outputs for save points."""
 
