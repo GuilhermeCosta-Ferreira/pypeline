@@ -13,6 +13,8 @@ from dataclasses import dataclass
 # ================================================================
 @dataclass(frozen=True)
 class PickleFormat:
+    """`TempFileFormat` using pickle; every actor must be picklable."""
+
     extension: ClassVar[str] = ".pkl"
 
     def write(self, obj: Any, path: Path) -> None:
