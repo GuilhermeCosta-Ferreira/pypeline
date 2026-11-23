@@ -47,7 +47,11 @@ disable = [
     "missing-class-docstring",
     "missing-function-docstring",
     "wrong-import-order",
+
 ]
+[tool.pylint.design]
+min-public-methods = 1
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = [

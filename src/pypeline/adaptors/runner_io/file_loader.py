@@ -5,9 +5,9 @@ from dataclasses import replace, field, dataclass
 
 from pypeline.types import FilesMap
 
-from ..formats import PickleFormat, TempFileFormat
-from ...domain.pipeline import InputSettings
 from ..actor_io import ActorIORegistry
+from ...domain.pipeline import InputSettings
+from ..temporary_formats import PickleFormat, TempFileFormat
 from ...domain.runner import Loader, ActorRecord, INPUT_STEP
 
 
@@ -24,11 +24,11 @@ class FileLoader(Loader):
 
         if actor.step_idx == INPUT_STEP:
             io = ActorIORegistry.get(actor.class_name)
-            object = io.load(actor.path)
-            return replace(actor, object=object)
+            obj = io.load(actor.path)
+            return replace(actor, object=obj)
 
-        object = self.temp_fmt.read(actor.path)
-        return replace(actor, object=object)
+        obj = self.temp_fmt.read(actor.path)
+        return replace(actor, object=obj)
 
     def files(self, input_settings: InputSettings) -> FilesMap:
         files: FilesMap = []
