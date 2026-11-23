@@ -76,7 +76,7 @@ class Runner:
             live_actors = others if step.mutable else others + targets
             live_actors.append(self._store(result_record))
 
-        return Actors.from_records([a for a in live_actors])
+        return Actors.from_records(live_actors)
 
     # ──────────────────────────────────────────────────────
     # 1.1 Subsection: Singles main Foundation
