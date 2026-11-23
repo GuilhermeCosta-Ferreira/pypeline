@@ -12,6 +12,8 @@ dependencies = [
     "polars (>=2.1.0,<3.0.0)",
     "pyyaml (>=6.0.4,<7.0.0)",
 ]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
 
 [tool.poetry]
 packages = [{include = "pypeline", from = "src"}]

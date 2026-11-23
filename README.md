@@ -13,6 +13,7 @@
 <div align="center">
     <img src="https://shields.io/badge/python-3.14-blue?logo=python&style=flat" alt="Python">
     <img src="https://shields.io/badge/latest-v0.1.0-blue?&style=flat" alt="Version">
+    <img src="https://shields.io/badge/license-AGPL--3.0-blue?&style=flat" alt="License">
     <img src="https://shields.io/badge/Package_Manager-poetry-green?logo=poetry&style=flat" alt="Poetry">
     <img src="https://shields.io/badge/code_style-black-black?&style=flat" alt="Formatter">
     <img src="https://shields.io/badge/linting-pylint-yellow?&style=flat" alt="Linter">
@@ -291,3 +292,7 @@ Pypeline(Path("pipeline.yaml"), temp_fmt=GzipPickleFormat()).run()
 ```
 
 `temp_root` sets the folder the per-run temporary folder is created in (the system default otherwise). Pypeline only deletes the per-run folder, never `temp_root` itself.
+
+# License
+
+Pypeline is licensed under the [GNU Affero General Public License v3.0](LICENSE).
