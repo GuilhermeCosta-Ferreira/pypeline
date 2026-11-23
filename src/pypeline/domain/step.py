@@ -16,18 +16,45 @@ StepScope = Literal["single", "global"]
 # ================================================================
 @dataclass
 class Step[InputClass, OutputClass](ABC):
-    """One unit of work in a pipeline, with validation around it.
+    """One operation of a pipeline: takes one input and returns one output.
 
-    Callers always go through ``apply``, which validates the input, runs the step and
-    validates the output. Subclasses implement ``run`` and both validators, declare
-    their settings as dataclass fields, and must not override ``apply``.
+    Subclass it with the input and output classes as type parameters, declare the step's
+    settings as dataclass fields, implement `run`, `validate_input` and `validate_output`,
+    and register it in `StepRegistry` so a pipeline file can name it. Never override
+    `apply`: the runner calls it to validate, run and validate again.
+
+    A step runs on every actor whose class name matches its input class.
 
     Attributes:
-        scope: ``"single"`` runs the step once per item; ``"global"`` runs it once on
-            the whole collection, for steps that need every item at the same time
-            (e.g. normalising against the dataset mean).
-    """
+        scope: `"single"` runs the step once per actor of its input class. `"global"` runs
+            it once on the list of all of them; declare the input as `list[X]`.
+        requires: Step classes that must appear earlier in the pipeline.
+        mutable: If True (default), the step consumes its input: the actors it ran on are
+            dropped and only its output continues. If False, they are kept next to it.
 
+    Examples:
+        A single step, run once per `Image`:
+
+        >>> @StepRegistry.register("blur")
+        ... @dataclass
+        ... class Blur(Step[Image, Image]):
+        ...     radius: int = 2
+        ...
+        ...     def run(self, data: Image) -> Image:
+        ...         return data.blur(self.radius)
+        ...
+        ...     def validate_input(self, data: Image) -> None: ...
+        ...     def validate_output(self, output: Image) -> None: ...
+
+        A global step, run once on every `Image` at the same time, keeping them:
+
+        >>> @StepRegistry.register("stats")
+        ... @dataclass
+        ... class Stats(Step[list[Image], ImageStats]):
+        ...     scope = "global"
+        ...     mutable = False
+        ...     ...
+    """
     scope: ClassVar[StepScope] = "single"
     requires: ClassVar[list[type[Step]]] = []
     mutable: ClassVar[bool] = True  # delets input
