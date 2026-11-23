@@ -1,6 +1,8 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+import tempfile
+
 from pathlib import Path
 from dataclasses import dataclass, field
 
@@ -31,12 +33,13 @@ class Pypeline:
         self.pipeline = PipelineBuilder().build(draft)
 
     def run(self) -> None:
-        runner = Runner(
-            loader=FileLoader(temp_fmt=self.temp_fmt),
-            saver=FileSaver(
-                self.pipeline.output_settings.out_dir,
-                self.pipeline.output_settings.fmts,
-            ),
-            temp_storage=FileTempStorage(root=..., fmt=self.temp_fmt),
-        )
-        runner.run(self.pipeline)
+        with tempfile.TemporaryDirectory(prefix="pypeline_", dir=self.temp_root) as tmp:
+            runner = Runner(
+                loader=FileLoader(temp_fmt=self.temp_fmt),
+                saver=FileSaver(
+                    self.pipeline.output_settings.out_dir,
+                    self.pipeline.output_settings.fmts,
+                ),
+                temp_storage=FileTempStorage(root=Path(tmp), fmt=self.temp_fmt),
+            )
+            runner.run(self.pipeline)
