@@ -2,8 +2,9 @@
 # 1. Section: Functions
 # ================================================================
 class PipelineError(ValueError):
-    """The pipeline file is malformed."""
+    """The pipeline file or its steps are invalid; raised while building, before
+    anything runs."""
 
 
 class RunnerError(ValueError):
-    """The runner found a mistake."""
+    """The pipeline failed while running, after it was built and validated."""
