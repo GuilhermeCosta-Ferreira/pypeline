@@ -81,6 +81,8 @@ class Step[InputClass, OutputClass](ABC):
         for base in get_original_bases(type(self)):
             if get_origin(base) is Step:
                 inp, out = get_args(base)
+                if get_origin(inp) is list:  # global steps take a list of one actor class
+                    inp = get_args(inp)[0]
                 return get_origin(inp) or inp, get_origin(out) or out
         raise PipelineError(
             f"{type(self).__name__} does not declare Step[InputClass, OutputClass]"
