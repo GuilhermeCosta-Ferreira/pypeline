@@ -55,6 +55,9 @@ class Registry[T]:
 
         The class is called with no arguments. For classes that need constructor
         arguments, use `get_type` and instantiate the class yourself.
+
+        Raises:
+            ValueError: If no class is registered under `key`.
         """
         return cls.get_type(key)()
 
