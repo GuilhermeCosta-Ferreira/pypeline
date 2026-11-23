@@ -59,11 +59,11 @@ class PipelineBuilder:
     # 1.2 Subsection: Public Helper Functions
     # ──────────────────────────────────────────────────────
     def build_section(self, cls: Any, data: dict, section: str) -> Any:
-        """Build a settings dataclass from one section of the pipeline data (dict from
-        yaml).
+        """Build a dataclass from one mapping of the pipeline file (a settings section
+        or a step).
 
         Args:
-            cls: Dataclass to build.
+            cls: Settings or step dataclass to build.
             data: Raw mapping for this section, as loaded from the pipeline file.
             section: Section name, used only to prefix error messages.
 
@@ -77,7 +77,8 @@ class PipelineBuilder:
             raise PipelineError(f"[{section}] {e}") from e
 
     def build_steps(self, raw_steps: list[dict]) -> list[Step]:
-        """Build each step from its registry `key` and the remaining keys as its fields.
+        """Build each step from its `name` (its StepRegistry key), using the other keys
+        as its fields.
 
         Raises:
             PipelineError: If a step has no `name`, the name is not registered, or its
@@ -104,8 +105,9 @@ class PipelineBuilder:
 
         Raises:
             PipelineError: If a step's required steps do not appear earlier, a step's input
-                type is not loaded or produced before it, or a save point names a missing
-                step or an out-of-range occurrence.
+                class is not loaded or produced before it, or was consumed by an earlier
+                mutable step, or a save point names a missing step or an out-of-range
+                occurrence.
         """
         _validate_step_order(pipeline.steps)
         _validate_save_points(pipeline)
@@ -149,7 +151,8 @@ def _validate_step_order(steps: list[Step]) -> None:
 
 
 def _validate_input_flow(pipeline: Pipeline) -> None:
-    """Check each step's input type is loaded or produced by an earlier step."""
+    """Check each step's input class is available: loaded, or produced earlier and not
+    consumed by a mutable step."""
     settings = pipeline.input_settings
 
     # 1. Actors loaded from the input sources

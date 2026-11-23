@@ -18,6 +18,11 @@ from ..registries import StepRegistry
 # ================================================================
 @dataclass(frozen=True)
 class Pipeline:
+    """A pipeline's settings and its steps in order.
+
+    Build it with `PipelineBuilder`.
+    """
+
     global_settings: GlobalSettings
     input_settings: InputSettings
     output_settings: OutputSettings

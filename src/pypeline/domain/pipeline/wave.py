@@ -11,6 +11,9 @@ from ..step import Step
 # ================================================================
 @dataclass(frozen=True)
 class Wave:
+    """Consecutive single steps and the global steps after them, as `(index in
+    pipeline.steps, step)` pairs."""
+
     single_steps: list[tuple[int, Step]]
     global_steps: list[tuple[int, Step]]
 
@@ -19,6 +22,8 @@ class Wave:
 # 1.1 Subsection: Helper Functions
 # ──────────────────────────────────────────────────────
 def build_waves(steps: list[Step]) -> list[Wave]:
+    """Group steps into waves without reordering them; a single step after a global
+    starts a new wave."""
     waves: list[Wave] = []
     singles: list[tuple[int, Step]] = []
     globals_: list[tuple[int, Step]] = []
