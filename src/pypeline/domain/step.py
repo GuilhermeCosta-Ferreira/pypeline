@@ -30,7 +30,7 @@ class Step[InputClass, OutputClass](ABC):
 
     scope: ClassVar[StepScope] = "single"
     requires: ClassVar[list[type[Step]]] = []
-    mutable: ClassVar[bool] = True # delets input
+    mutable: ClassVar[bool] = True  # delets input
 
     @property
     def input_type(self) -> type:
@@ -47,7 +47,6 @@ class Step[InputClass, OutputClass](ABC):
     @property
     def output_name(self) -> str:
         return self.io_types()[1].__name__
-
 
     # ──────────────────────────────────────────────────────
     # 1.1 Subsection: Main Functions
@@ -73,7 +72,6 @@ class Step[InputClass, OutputClass](ABC):
     def validate_output(self, output: OutputClass) -> None:
         """Check that ``run`` produced an acceptable result."""
 
-
     # ──────────────────────────────────────────────────────
     # 1.2 Subsection: Helper Functions
     # ──────────────────────────────────────────────────────
@@ -81,7 +79,9 @@ class Step[InputClass, OutputClass](ABC):
         for base in get_original_bases(type(self)):
             if get_origin(base) is Step:
                 inp, out = get_args(base)
-                if get_origin(inp) is list:  # global steps take a list of one actor class
+                if (
+                    get_origin(inp) is list
+                ):  # global steps take a list of one actor class
                     inp = get_args(inp)[0]
                 return get_origin(inp) or inp, get_origin(out) or out
         raise PipelineError(

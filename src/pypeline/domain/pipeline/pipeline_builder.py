@@ -97,8 +97,8 @@ class PipelineBuilder:
         return steps
 
     def validate_pipeline(self, pipeline: Pipeline) -> None:
-        """Check a Pipeline's steps and save points are consistent; `build` already calls
-        it.
+        """Check a Pipeline's steps and save points are consistent; `build` already
+        calls it.
 
         Call it directly for a Pipeline constructed by hand, e.g. in tests.
 

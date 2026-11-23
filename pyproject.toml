@@ -45,6 +45,7 @@ disable = [
     "missing-module-docstring",
     "missing-class-docstring",
     "missing-function-docstring",
+    "wrong-import-order",
 ]
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -103,7 +103,6 @@ class Runner:
 
         return live_actors
 
-
     # ──────────────────────────────────────────────────────
     # 1.2 Subsection: Helper Functions
     # ──────────────────────────────────────────────────────
@@ -112,12 +111,14 @@ class Runner:
             return actor
         return replace(actor, path=self.temp_storage.put(actor), object=None)
 
-    def _apply(self, pipeline: Pipeline, idx: int, step: Step, data: Any) -> ActorRecord:
+    def _apply(
+        self, pipeline: Pipeline, idx: int, step: Step, data: Any
+    ) -> ActorRecord:
         result_record = ActorRecord(
             path=None,
             step_idx=idx,
             class_name=step.output_name,
-            object=step.apply(data)
+            object=step.apply(data),
         )
 
         for save_point in pipeline.get_save_points_after(idx):

@@ -1,10 +1,9 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
-from typing import Any
-
 import polars as pl
 
+from typing import Any
 from pathlib import Path
 from dataclasses import dataclass
 from collections.abc import Iterator
@@ -25,6 +24,18 @@ SCHEMA: pl.Schema = pl.Schema(
 # 1. Section: Class and Inits
 # ================================================================
 class Actors:
+    """
+    data:
+                       Path                    | Step Idx | Class Name
+
+        "data/source_1/mouse_1.csv"            |    0     | "Syllable"
+        "temp/source_1/mouse_1_dist01.csv"     |    3     | "Dist"
+        "temp/source_1/mouse_1_syllable01.csv" |    3     | "Syllable"
+        "data/source_1/mouse_2.csv"            |    3     | "Syllable"
+        "temp/source_1/mouse_2_dist01.csv"     |    3     | "Dist"
+        "temp/source_1/mouse_2_syllable01.csv" |    3     | "Syllable"
+    """
+
     def __init__(self) -> None:
         self.table = pl.DataFrame(schema=SCHEMA)
 
@@ -53,7 +64,6 @@ class Actors:
         return actors
 
 
-
 # ================================================================
 # 2. Section: Unit Class
 # ================================================================
@@ -64,16 +74,3 @@ class ActorRecord:
     class_name: str
 
     object: Any | None = None
-
-
-"""
-data:
-                   Path                    | Step Idx | Class Name
-
-    "data/source_1/mouse_1.csv"            |    0     | "Syllable"
-    "temp/source_1/mouse_1_dist01.csv"     |    3     | "Dist"
-    "temp/source_1/mouse_1_syllable01.csv" |    3     | "Syllable"
-    "data/source_1/mouse_2.csv"            |    3     | "Syllable"
-    "temp/source_1/mouse_2_dist01.csv"     |    3     | "Dist"
-    "temp/source_1/mouse_2_syllable01.csv" |    3     | "Syllable"
-"""
