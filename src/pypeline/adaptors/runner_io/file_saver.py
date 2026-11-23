@@ -16,11 +16,26 @@ from ..actor_io import ActorIORegistry
 # ================================================================
 @dataclass
 class FileSaver:
+    """`Saver` that writes through `ActorIORegistry`, one file per output format.
+
+    Files are named `{class name}_{n}{extension}` with one counter for the whole run,
+    so outputs never overwrite each other.
+
+    Attributes:
+        out_dir: Folder save points write into, under their `subdir` if set.
+        fmts: Output formats used when a save point sets none for the class.
+    """
+
     out_dir: Path
     fmts: FormatsMap
     _count: int = field(default=0, init=False)
 
     def save(self, output: ActorRecord, point: SavePoint) -> None:
+        """Write `output.object` once per output format of its class.
+
+        Raises:
+            ValueError: If neither `point.fmts` nor `fmts` has a format for the class.
+        """
         # 1. The save point's formats win over the output section's
         exts = extensions(point.fmts, output.class_name) or extensions(
             self.fmts, output.class_name

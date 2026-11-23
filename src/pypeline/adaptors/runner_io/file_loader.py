@@ -16,6 +16,13 @@ from ...domain.runner import Loader, ActorRecord, INPUT_STEP
 # ================================================================
 @dataclass
 class FileLoader(Loader):
+    """`Loader` that reads inputs through `ActorIORegistry` and temp files through
+    `temp_fmt`.
+
+    Attributes:
+        temp_fmt: Must be the format the `FileTempStorage` writes with.
+    """
+
     temp_fmt: TempFileFormat = field(default_factory=PickleFormat)
 
     def load(self, actor: ActorRecord) -> ActorRecord:
@@ -31,6 +38,8 @@ class FileLoader(Loader):
         return replace(actor, object=obj)
 
     def files(self, input_settings: InputSettings) -> FilesMap:
+        """Only the top level of each source is listed; files whose extension is not
+        mapped are skipped."""
         files: FilesMap = []
         for source in input_settings.sources:
             # 1. Source entries override the global ones
