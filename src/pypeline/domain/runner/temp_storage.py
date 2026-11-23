@@ -11,5 +11,11 @@ from .actors import ActorRecord
 # 1. Section: Functions
 # ================================================================
 class TempStorage(Protocol):
-    def put(self, actor: ActorRecord) -> Path: ...
-    def clear(self) -> None: ...
+    """Holds actors between the phases of a run."""
+
+    def put(self, actor: ActorRecord) -> Path:
+        """Write `actor.object` and return a path the `Loader` can read it back from."""
+        ...
+
+    def clear(self) -> None:
+        """Delete everything `put` wrote during the run."""

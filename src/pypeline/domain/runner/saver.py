@@ -13,4 +13,7 @@ from ..pipeline import SavePoint
 # ================================================================
 @dataclass
 class Saver(Protocol):
-    def save(self, output: ActorRecord, point: SavePoint) -> None: ...
+    """Writes step outputs for save points."""
+
+    def save(self, output: ActorRecord, point: SavePoint) -> None:
+        """Write `output.object` where and how `point` says."""

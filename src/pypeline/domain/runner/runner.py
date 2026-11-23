@@ -20,11 +20,27 @@ from .actors import ActorRecord, Actors
 # ================================================================
 @dataclass
 class Runner:
+    """Run a `Pipeline`, allowing for all optimizations and boilerplate code to be standardized across projects
+
+    Attributes:
+        loader: Lists input files and reads actors from disk.
+        saver: Writes step outputs for each save point.
+        temp_storage: Holds actors between phases; cleared when the run ends.
+    """
+
     loader: Loader
     saver: Saver
     temp_storage: TempStorage
 
     def run(self, pipeline: Pipeline) -> None:
+        """Run every step of `pipeline` on the input files, wave by wave.
+
+        Each wave runs its single steps actor by actor, then its global steps on all
+        actors at once. Outputs are written only where save points ask for them.
+
+        Raises:
+            RunnerError: If a global step finds no actor of its input class.
+        """
         actors = Actors.from_files(self.loader.files(pipeline.input_settings))
 
         for wave in pipeline.waves:

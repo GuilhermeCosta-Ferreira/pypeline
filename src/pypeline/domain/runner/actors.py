@@ -24,16 +24,14 @@ SCHEMA: pl.Schema = pl.Schema(
 # 1. Section: Class and Inits
 # ================================================================
 class Actors:
-    """
-    data:
-                       Path                    | Step Idx | Class Name
+    """References to the actors currently in a run, never the actors themselves.
 
-        "data/source_1/mouse_1.csv"            |    0     | "Syllable"
-        "temp/source_1/mouse_1_dist01.csv"     |    3     | "Dist"
-        "temp/source_1/mouse_1_syllable01.csv" |    3     | "Syllable"
-        "data/source_1/mouse_2.csv"            |    3     | "Syllable"
-        "temp/source_1/mouse_2_dist01.csv"     |    3     | "Dist"
-        "temp/source_1/mouse_2_syllable01.csv" |    3     | "Syllable"
+    Examples:
+        One row per actor; inputs have `step_idx == INPUT_STEP`:
+
+            path                      | step_idx | class_name
+            "data/batch_1/img_01.png" |    -1    | "Image"
+            "temp/stats_0.pkl"        |     2    | "ImageStats"
     """
 
     def __init__(self) -> None:
@@ -69,6 +67,9 @@ class Actors:
 # ================================================================
 @dataclass(frozen=True)
 class ActorRecord:
+    """Reference to one actor; `object` is set only while it is loaded, and `step_idx`
+    is the step that produced it."""
+
     path: Path | None
     step_idx: int
     class_name: str
