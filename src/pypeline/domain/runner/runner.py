@@ -1,10 +1,12 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+from typing import Any
 from dataclasses import dataclass, replace
 
 from pypeline.errors import RunnerError
 
+from ..step import Step
 from .saver import Saver
 from .loader import Loader
 from ..pipeline import Pipeline
@@ -46,7 +48,7 @@ class Runner:
 
             # 2. Saves all the temps
             for actor_out in actors_out:
-                next_actors.append(self.store(actor_out))
+                next_actors.append(self._store(actor_out))
 
         return Actors.from_records(next_actors)
 
@@ -60,41 +62,29 @@ class Runner:
         for idx, step in wave.global_steps:
             # 2. Checks nothing broke
             targets = [a for a in live_actors if a.class_name == step.input_name]
+            others = [a for a in live_actors if a.class_name != step.input_name]
             if not targets:
                 raise RunnerError(
                     f"Global step {type(step).__name__} has no {step.input_name} to run on"
                 )
 
-            # 3. Loads everything for this step and stores the not loaded refs
+            # 3. Builds a new record from loaded actors
             inputs = [self.loader.load(a) for a in targets]
-            others = [a for a in live_actors if a.class_name != step.input_name]
+            result_record = self._apply(pipeline, idx, step, [a.object for a in inputs])
 
-            # 4. Builds a new record
-            result_record = ActorRecord(
-                path=None,
-                step_idx=idx,
-                class_name=step.output_name,
-                object=step.apply([a.object for a in inputs]),
-            )
-
-            # 5. Applies the save point if needed
-            for save_point in pipeline.get_save_points_after(idx):
-                self.saver.save(result_record, save_point)
-
-            # 6. Updates the list
+            # 4. Updates the list
             live_actors = others if step.mutable else others + targets
-            live_actors.append(self.store(result_record))
+            live_actors.append(self._store(result_record))
 
         return Actors.from_records([a for a in live_actors])
 
     # ──────────────────────────────────────────────────────
-    # 1.1 Subsection: Helper Functions
+    # 1.1 Subsection: Singles main Foundation
     # ──────────────────────────────────────────────────────
     def run_item(
         self, wave: Wave, pipeline: Pipeline, actor: ActorRecord
     ) -> list[ActorRecord]:
         # 1. we start with only one actor, but we keep all of the actors
-        # that will be used for future steps in this phase
         live_actors = [self.loader.load(actor)]
 
         for idx, step in wave.single_steps:
@@ -104,13 +94,7 @@ class Runner:
                     next_actors.append(live_actor)
                     continue
 
-                result = step.apply(live_actor.object)
-                result_record = ActorRecord(
-                    path=None, step_idx=idx, class_name=step.output_name, object=result
-                )
-
-                for save_point in pipeline.get_save_points_after(idx):
-                    self.saver.save(result_record, save_point)
+                result_record = self._apply(pipeline, idx, step, live_actor.object)
 
                 if not step.mutable:
                     next_actors.append(live_actor)
@@ -119,7 +103,24 @@ class Runner:
 
         return live_actors
 
-    def store(self, actor: ActorRecord) -> ActorRecord:
+
+    # ──────────────────────────────────────────────────────
+    # 1.2 Subsection: Helper Functions
+    # ──────────────────────────────────────────────────────
+    def _store(self, actor: ActorRecord) -> ActorRecord:
         if actor.path is not None:  # already on disk
             return actor
         return replace(actor, path=self.temp_storage.put(actor), object=None)
+
+    def _apply(self, pipeline: Pipeline, idx: int, step: Step, data: Any) -> ActorRecord:
+        result_record = ActorRecord(
+            path=None,
+            step_idx=idx,
+            class_name=step.output_name,
+            object=step.apply(data)
+        )
+
+        for save_point in pipeline.get_save_points_after(idx):
+            self.saver.save(result_record, save_point)
+
+        return result_record
