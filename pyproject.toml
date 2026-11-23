@@ -10,6 +10,7 @@ requires-python = ">=3.14,<3.15"
 dependencies = [
     "dacite (>=1.9.2,<2.0.0)",
     "polars (>=2.1.0,<3.0.0)",
+    "pyyaml (>=6.0.4,<7.0.0)",
 ]
 
 [tool.poetry]
@@ -46,7 +47,11 @@ disable = [
     "missing-class-docstring",
     "missing-function-docstring",
     "wrong-import-order",
+
 ]
+[tool.pylint.design]
+min-public-methods = 1
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = [

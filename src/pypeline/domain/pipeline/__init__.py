@@ -1,4 +1,5 @@
 from .pipeline import Pipeline
-from .settings import SavePoint
+from .pipeline_draft import PipelineDraft
+from .settings import SavePoint, InputSettings
 
-__all__ = ["Pipeline", "SavePoint"]
+__all__ = ["Pipeline", "SavePoint", "InputSettings", "PipelineDraft"]

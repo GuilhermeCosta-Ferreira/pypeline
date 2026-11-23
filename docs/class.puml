@@ -241,6 +241,66 @@ package "Model Domain Layer" #FFF8E1 {
 'Adapter Layer'
 '=============================================================================='
 package "Adapter Layer" #E3F2FD {
+    package "Runner IO"{
+        class FileLoader <<implemented>> {
+            + temp_fmt: TempFileFormat
+        }
+        FileLoader --|> Loader
+
+
+        class FileSaver <<implemented>> {
+            + out_dir: Path
+            + fmts: FormatsMap
+            + _count: int
+        }
+        FileSaver --|> Saver
+
+
+        class FileTempStorage <<implemented>> {
+            + root: Path
+            + fmt: TempFileFormat
+            - _count: int
+        }
+        FileTempStorage --|> TempStorage
+    }
+
+
+    package "Actor IO"{
+        class ActorIORegistry <<implemented>> {
+        }
+        ActorIORegistry --|> Registry
+
+
+        interface ActorIO <<implemented>> {
+            + readers: ClassVar[dict[str, Callable[[Path], Any]]]
+            + writers: ClassVar[dict[str, Callable[[Any, Path], None]]]
+
+            + load(path: Path): Any
+            + save(obj: Any, path: Path): None
+        }
+    }
+    !if ($SHOW_DEPENDENCIES == 1)
+        FileLoader ..>  ActorIORegistry
+        FileLoader ..>  ActorIO
+        FileSaver ..>  ActorIORegistry
+        FileSaver ..>  ActorIO
+    !endif
+
+
+    package "Temporary Formats"{
+        interface TempFileFormat <<implemented>> {
+            + extension: ClassVar[str]
+
+            + write(obj: Any, path: Path): None
+            + read(path: Path): Any
+        }
+
+
+        class PickleFormat <<implemented>> {
+        }
+        PickleFormat --|> TempFileFormat
+    }
+    FileTempStorage --> TempFileFormat
 }
 
 @enduml
