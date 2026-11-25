@@ -23,7 +23,10 @@ class Step[InputClass, OutputClass](ABC):
     and register it in `StepRegistry` so a pipeline file can name it. Never override
     `apply`: the runner calls it to validate, run and validate again.
 
-    A step runs on every actor whose class name matches its input class.
+    A step runs on every actor whose class name matches its input class. A mutable
+    step can drop an actor by returning `None` from `run`: nothing is saved for it and
+    later steps never see it. Keep `Step[Image, Image]` as the type parameters and
+    annotate only `run` as returning `Image | None`.
 
     Attributes:
         scope: `"single"` runs the step once per actor of its input class. `"global"` runs
@@ -45,6 +48,15 @@ class Step[InputClass, OutputClass](ABC):
         ...
         ...     def validate_input(self, data: Image) -> None: ...
         ...     def validate_output(self, output: Image) -> None: ...
+
+        A filter that drops dark images and keeps the rest:
+
+        >>> @StepRegistry.register("drop_dark")
+        ... @dataclass
+        ... class DropDark(Step[Image, Image]):
+        ...     def run(self, data: Image) -> Image | None:
+        ...         return data if data.brightness > 0.2 else None
+        ...     ...
 
         A global step, run once on every `Image` at the same time, keeping them:
 
@@ -80,7 +92,7 @@ class Step[InputClass, OutputClass](ABC):
     # 1.1 Subsection: Main Functions
     # ──────────────────────────────────────────────────────
     @final
-    def apply(self, data: InputClass) -> OutputClass:
+    def apply(self, data: InputClass) -> OutputClass | None:
         """Validate the input, run the step and validate the output.
 
         The runner calls this; call it yourself only to try a step outside a pipeline.
@@ -90,19 +102,24 @@ class Step[InputClass, OutputClass](ABC):
                 class for a global step.
 
         Returns:
-            The step's output, already validated.
+            The step's output, already validated, or `None` if the step dropped the
+            actor (`validate_output` is then skipped).
         """
         self.validate_input(data)
         result = self.run(data)
-        self.validate_output(result)
+        if result is not None:
+            self.validate_output(result)
         return result
 
     @abstractmethod
-    def run(self, data: InputClass) -> OutputClass:
+    def run(self, data: InputClass) -> OutputClass | None:
         """Transform the input into the step's output.
 
         Args:
             data: Input that already passed `validate_input`.
+
+        Returns:
+            The output, or `None` to drop the actor so it goes no further.
         """
         raise NotImplementedError()
 
