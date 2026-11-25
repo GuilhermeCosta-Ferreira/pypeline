@@ -196,6 +196,8 @@ class CountWords(Step[list[Text], TextStats]):
     def validate_output(self, output: TextStats) -> None: ...
 ```
 
+A step can drop an actor by returning `None` from `run` (annotate it `-> Text | None`, keep `Step[Text, Text]` and leave `mutable` at `True`). Nothing is saved for it and later steps never see it.
+
 To try a step on its own, outside a pipeline, call `apply`:
 
 ```python
