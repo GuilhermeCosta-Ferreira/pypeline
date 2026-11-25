@@ -243,16 +243,17 @@ output:
 ```python
 # main.py
 from pathlib import Path
-
 from pypeline import Pypeline
 
-import actor_io  # noqa: F401  registers the actor I/O
-import steps  # noqa: F401  registers the steps
+PROTOCOL_PATH: Path = Path("pipeline.yaml")
 
-Pypeline(Path("pipeline.yaml")).run()
+pypeline = Pypeline(PROTOCOL_PATH, packages=["actor_io", "steps"])
+pypeline.run()
 ```
 
-Steps and actor I/O are registered when their module is imported, so import them before creating the `Pypeline`. The pipeline file is checked as soon as the `Pypeline` is created: unknown sections or keys, unknown step names, a step whose input class is not available at that point, or a save point naming a missing step all raise `PipelineError` before anything runs. Relative paths in the file are resolved from the current working directory.
+Steps and actor I/O are registered when their module is imported. `packages` lists those modules by name, and `Pypeline` imports them before it reads the pipeline file, so you never import them yourself. A name can also be a package: every module inside it is imported too, so new steps are picked up without touching any `__init__.py`. Point it at the package that holds your steps and actor I/O, not at your whole project, or scripts like this `main.py` get imported (and run) as well.
+
+The pipeline file is checked as soon as the `Pypeline` is created: unknown sections or keys, unknown step names, a step whose input class is not available at that point, or a save point naming a missing step all raise `PipelineError` before anything runs. Relative paths in the file are resolved from the current working directory.
 
 The result:
 
