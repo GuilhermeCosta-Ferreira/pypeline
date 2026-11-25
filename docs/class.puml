@@ -39,6 +39,7 @@ package "Service Layer" #E8F5E9 {
     class Pypeline <<implemented>> {
         + path: Path
 
+        + packages: list[str]
         + temp_fmt: TempFileFormat
         + temp_root: Path | None
         + pipeline: Pipeline
