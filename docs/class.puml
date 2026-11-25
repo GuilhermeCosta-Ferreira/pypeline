@@ -46,6 +46,15 @@ package "Service Layer" #E8F5E9 {
 
         + run(): None
     }
+
+
+    class PipelineTemplates <<implemented>> {
+        + folder: Path | None
+
+        + from_pyproject(start: Path | None): PipelineTemplates
+        + names(): list[str]
+        + create(path: Path, template: str, overwrite: bool): Path
+    }
 }
 
 
