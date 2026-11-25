@@ -207,6 +207,23 @@ Text(content='HI?')
 
 ## 4. The pipeline file
 
+Start one from a template instead of writing it from scratch:
+
+```bash
+pypeline init pipeline.yaml
+```
+
+Keep your own templates as `.yaml` files in a folder and point pypeline at it once in your `pyproject.toml`. Each file's name is the template's name, and one called `default.yaml` replaces the built-in one:
+
+```toml
+[tool.pypeline]
+templates = "my_project/templates"
+```
+
+Then `pypeline init runs/denoise.yaml --template denoise` copies `my_project/templates/denoise.yaml`, from any folder inside the project. `pypeline templates` lists the names, `--templates DIR` overrides the setting, and `--force` replaces an existing file. From Python, `PipelineTemplates.from_pyproject().create(Path("runs/denoise.yaml"), "denoise")` does the same, or `PipelineTemplates(Path("my_project/templates"))` to name the folder yourself.
+
+A full pipeline file looks like this:
+
 ```yaml
 # pipeline.yaml
 global:

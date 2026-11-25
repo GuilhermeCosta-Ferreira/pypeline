@@ -16,6 +16,9 @@ license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 keywords = ["pipeline", "data processing", "workflow", "yaml"]
 
+[project.scripts]
+pypeline = "pypeline.cli:main"
+
 [tool.poetry]
 packages = [{include = "pypeline", from = "src"}]
 
