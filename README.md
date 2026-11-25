@@ -202,7 +202,6 @@ Text(content='HI?')
 global:
   pipeline_name: shout_and_count
   check_scope: true             # not used yet, but required
-  save_all_intermediates: false # not used yet, but required
 
 input:
   load_as: {".txt": "Text"}     # extension -> actor class, for every source
