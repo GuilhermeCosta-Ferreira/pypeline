@@ -1,7 +1,6 @@
 global:
   pipeline_name: "preprocessing_v1"
   check_scope: True
-  save_all_intermediates: False
 
 input:
   load_as:
