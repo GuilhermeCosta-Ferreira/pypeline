@@ -11,7 +11,8 @@ from pypeline.types import Reader, Writer
 # 1. Section: Functions
 # ================================================================
 class ActorIO:
-    """How one actor class is read from and written to files, one function per extension.
+    """How one actor class is read from and written to files, one function per
+    extension.
 
     Usually built by `ActorIORegistry.add`, which shows how to register one.
 
