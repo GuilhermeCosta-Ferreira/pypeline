@@ -2,8 +2,9 @@
 # 0. Section: IMPORTS
 # ================================================================
 from pathlib import Path
-from collections.abc import Callable
 from typing import ClassVar, Any, final
+
+from pypeline.types import Reader, Writer
 
 
 # ================================================================
@@ -12,26 +13,15 @@ from typing import ClassVar, Any, final
 class ActorIO:
     """How one actor class is read from and written to files, one function per extension.
 
-    Subclass it once per actor class and register the subclass in `ActorIORegistry`
-    under the class name the pipeline file uses. Fill only the side you need: an actor
-    that is never saved needs no `writers`. The actor class itself is never touched, so
-    this works for classes you do not own.
+    Usually built by `ActorIORegistry.add`, which shows how to register one.
 
     Attributes:
         readers: Extension to a function that reads a file into an actor.
         writers: Extension to a function that writes an actor to a file.
-
-    Examples:
-        >>> @ActorIORegistry.register("Image")
-        ... class ImageIO(ActorIO):
-        ...     @staticmethod
-        ...     def read_png(path: Path) -> Image: ...
-        ...
-        ...     readers = {".png": read_png}
     """
 
-    readers: ClassVar[dict[str, Callable[[Path], Any]]] = {}
-    writers: ClassVar[dict[str, Callable[[Any, Path], None]]] = {}
+    readers: ClassVar[dict[str, Reader]] = {}
+    writers: ClassVar[dict[str, Writer]] = {}
 
     @final
     def load(self, path: Path) -> Any:
