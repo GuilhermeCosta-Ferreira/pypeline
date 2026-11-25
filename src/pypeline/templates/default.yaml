@@ -1,0 +1,22 @@
+global:
+  pipeline_name: my_pipeline
+  check_scope: true             # not used yet, but required
+
+input:
+  load_as: {".txt": "Text"}     # extension -> actor class, for every source
+  sources:
+    - path: data                # a folder; only its top level is read
+      # load_as: {".csv": "Table"}  # extra mappings for this folder only
+
+steps:
+  - name: my_step               # StepRegistry key
+    # my_setting: 1             # fields of the step dataclass
+
+output:
+  out_dir: results
+  fmts: {".txt": "Text"}        # extension -> actor class
+  save_all_intermediates: false # not used yet, but required
+  save_points:
+    - after: my_step            # save this step's output
+      # subdir: my_step         # inside out_dir
+      # occurrence: 1           # which use of the step, if it appears more than once
