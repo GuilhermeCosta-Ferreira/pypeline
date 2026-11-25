@@ -277,13 +277,14 @@ package "Adapter Layer" #E3F2FD {
 
     package "Actor IO"{
         class ActorIORegistry <<implemented>> {
+            + add(key: str, readers: Mapping[str, Reader] | None, writers: Mapping[str, Writer] | None): None
         }
         ActorIORegistry --|> Registry
 
 
-        interface ActorIO <<implemented>> {
-            + readers: ClassVar[dict[str, Callable[[Path], Any]]]
-            + writers: ClassVar[dict[str, Callable[[Any, Path], None]]]
+        class ActorIO <<implemented>> {
+            + readers: ClassVar[dict[str, Reader]]
+            + writers: ClassVar[dict[str, Writer]]
 
             + load(path: Path): Any
             + save(obj: Any, path: Path): None

@@ -103,14 +103,14 @@ An actor is identified by its class name (`"Text"`), which is the name the pipel
 
 ## 2. Actor I/O: reading and writing actors
 
-Subclass `ActorIO` once per actor class and register it in `ActorIORegistry` under the class name. `readers` and `writers` map a file extension to a function. Fill only the side you need: an actor that is only produced never needs a reader, and one that is never saved needs no writer.
+Call `ActorIORegistry.add` once per actor class, with the class name as the key. `readers` and `writers` map a file extension to a function. Fill only the side you need: an actor that is only produced never needs a reader, and one that is never saved needs no writer.
 
 ```python
 # actor_io.py
 import json
 from pathlib import Path
 
-from pypeline import ActorIO, ActorIORegistry
+from pypeline import ActorIORegistry
 
 from actors import Text, TextStats
 
@@ -127,15 +127,23 @@ def write_json(stats: TextStats, path: Path) -> None:
     path.write_text(json.dumps(vars(stats)))
 
 
+ActorIORegistry.add("Text", readers={".txt": read_txt}, writers={".txt": write_txt})
+ActorIORegistry.add("TextStats", writers={".json": write_json})
+```
+
+If you prefer a named class, subclass `ActorIO` and register it with the decorator instead. Annotate `readers` and `writers` with `ClassVar`, or ruff flags them (RUF012):
+
+```python
+from typing import ClassVar
+
+from pypeline import ActorIO, ActorIORegistry
+from pypeline.types import Reader, Writer
+
+
 @ActorIORegistry.register("Text")
 class TextIO(ActorIO):
-    readers = {".txt": read_txt}
-    writers = {".txt": write_txt}
-
-
-@ActorIORegistry.register("TextStats")
-class TextStatsIO(ActorIO):
-    writers = {".json": write_json}
+    readers: ClassVar[dict[str, Reader]] = {".txt": read_txt}
+    writers: ClassVar[dict[str, Writer]] = {".txt": write_txt}
 ```
 
 ## 3. Steps
@@ -238,13 +246,13 @@ from pathlib import Path
 
 from pypeline import Pypeline
 
-import actor_io  # noqa: F401  registers the ActorIO classes
+import actor_io  # noqa: F401  registers the actor I/O
 import steps  # noqa: F401  registers the steps
 
 Pypeline(Path("pipeline.yaml")).run()
 ```
 
-Steps and `ActorIO` classes are registered when their module is imported, so import them before creating the `Pypeline`. The pipeline file is checked as soon as the `Pypeline` is created: unknown sections or keys, unknown step names, a step whose input class is not available at that point, or a save point naming a missing step all raise `PipelineError` before anything runs. Relative paths in the file are resolved from the current working directory.
+Steps and actor I/O are registered when their module is imported, so import them before creating the `Pypeline`. The pipeline file is checked as soon as the `Pypeline` is created: unknown sections or keys, unknown step names, a step whose input class is not available at that point, or a save point naming a missing step all raise `PipelineError` before anything runs. Relative paths in the file are resolved from the current working directory.
 
 The result:
 
