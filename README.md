@@ -110,7 +110,7 @@ Subclass `ActorIO` once per actor class and register it in `ActorIORegistry` und
 import json
 from pathlib import Path
 
-from pypeline.adaptors import ActorIO, ActorIORegistry
+from pypeline import ActorIO, ActorIORegistry
 
 from actors import Text, TextStats
 
@@ -154,8 +154,7 @@ Three class variables control how a step runs:
 # steps.py
 from dataclasses import dataclass
 
-from pypeline.domain.step import Step
-from pypeline.domain.registries import StepRegistry
+from pypeline import Step, StepRegistry
 
 from actors import Text, TextStats
 
@@ -238,7 +237,7 @@ output:
 # main.py
 from pathlib import Path
 
-from pypeline.service.pypeline import Pypeline
+from pypeline import Pypeline
 
 import actor_io  # noqa: F401  registers the ActorIO classes
 import steps  # noqa: F401  registers the steps
