@@ -18,12 +18,13 @@ class ActorIORegistry(Registry[ActorIO]):
     Examples:
         >>> ActorIORegistry.add("Image", readers={".png": read_png})
 
-        A hand-written subclass works too:
+        A hand-written subclass works too; annotate both maps with `ClassVar` so ruff
+        does not flag them (RUF012):
 
         >>> @ActorIORegistry.register("Image")
         ... class ImageIO(ActorIO):
-        ...     readers = {".png": read_png}
-        ...     writers = {".png": write_png}
+        ...     readers: ClassVar[dict[str, Reader]] = {".png": read_png}
+        ...     writers: ClassVar[dict[str, Writer]] = {".png": write_png}
 
         The key is the class name the formats maps point to:
 
