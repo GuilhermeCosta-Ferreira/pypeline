@@ -91,7 +91,8 @@ class Runner:
 
             # 4. Updates the list
             live_actors = others if step.mutable else others + targets
-            live_actors.append(self._store(result_record))
+            if result_record is not None:
+                live_actors.append(self._store(result_record))
 
         return Actors.from_records(live_actors)
 
@@ -115,7 +116,8 @@ class Runner:
 
                 if not step.mutable:
                     next_actors.append(live_actor)
-                next_actors.append(result_record)
+                if result_record is not None:
+                    next_actors.append(result_record)
             live_actors = next_actors
 
         return live_actors
@@ -130,12 +132,16 @@ class Runner:
 
     def _apply(
         self, pipeline: Pipeline, idx: int, step: Step, data: Any
-    ) -> ActorRecord:
+    ) -> ActorRecord | None:
+        output = step.apply(data)
+        if output is None:
+            return None
+
         result_record = ActorRecord(
             path=None,
             step_idx=idx,
             class_name=step.output_name,
-            object=step.apply(data),
+            object=output,
         )
 
         for save_point in pipeline.get_save_points_after(idx):
