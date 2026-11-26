@@ -165,8 +165,11 @@ package "Model Domain Layer" #FFF8E1 {
 
 
             class Source <<implemented>> {
-            + path: Path
-            + load_as: FormatsMap
+                + path: Path
+                + load_as: FormatsMap
+                + depth: int | None
+                + include_hidden_folders: bool
+                + include_hidden_files: bool
             }
         }
         Pipeline --> GlobalSettings
