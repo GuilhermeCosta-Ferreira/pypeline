@@ -236,6 +236,7 @@ input:
     - path: data/batch_1        # always a folder; only its top level is read
     - path: data/batch_2
       # load_as: {".json": "Labels"}  # extra mappings for this folder only
+      # depth: null                   # read every subfolder (default 1: top level)
 
 steps:
   - name: shout                 # StepRegistry key
@@ -253,6 +254,7 @@ output:
 ```
 
 - Each input file becomes one actor. Its extension decides the class; files with an unmapped extension are skipped.
+- A source's `depth` sets how many folder levels are read, counting the folder itself as 1 (the default); `null` reads every subfolder. Files and folders whose name starts with `.` are skipped unless `include_hidden_files` or `include_hidden_folders` is `true`.
 - Formats maps always go from extension to class name, in `input` and in `output` alike. One class can have several extensions; on output, it is saved once per extension.
 - A save point's own `fmts` override `output.fmts`. A step used more than once is picked with `occurrence` (counting from 1).
 - Only save points are written to `out_dir`, as `{class name}_{n}{extension}`. Everything in between lives in temporary files that are deleted when the run ends.
