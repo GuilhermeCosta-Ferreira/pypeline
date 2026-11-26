@@ -20,13 +20,6 @@ class SavePoint:
             more than once.
         subdir: Folder inside `out_dir` to save into.
         fmts: Not used yet.
-
-    Examples:
-        With steps `blur`, `sharpen`, `blur`, this saves the output of the second
-        `blur`:
-
-            - after: blur
-              occurrence: 2
     """
 
     after: str
