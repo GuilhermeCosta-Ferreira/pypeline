@@ -106,9 +106,10 @@ class PipelineBuilder:
         Raises:
             PipelineError: If a step's required steps do not appear earlier, a step's input
                 class is not loaded or produced before it, or was consumed by an earlier
-                mutable step, or a save point names a missing step or an out-of-range
-                occurrence.
+                mutable step, a save point names a missing step or an out-of-range
+                occurrence, or a source's `depth` is below 1.
         """
+        _validate_sources(pipeline)
         _validate_step_order(pipeline.steps)
         _validate_save_points(pipeline)
         _validate_input_flow(pipeline)
@@ -137,6 +138,14 @@ def _validate_step_name(pos: int, name: str | None) -> None:
         raise PipelineError(
             f"[steps[{pos}]] unknown step {name!r}. Known: {sorted(StepRegistry.known_keys())}"
         )
+
+
+def _validate_sources(pipeline: Pipeline) -> None:
+    for i, source in enumerate(pipeline.input_settings.sources):
+        if source.depth is not None and source.depth < 1:
+            raise PipelineError(
+                f"[input.sources[{i}]] depth must be 1 or more, or null; got {source.depth}"
+            )
 
 
 def _validate_step_order(steps: list[Step]) -> None:

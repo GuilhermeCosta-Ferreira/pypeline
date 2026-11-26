@@ -5,8 +5,11 @@ global:
 input:
   load_as: {".txt": "Text"}     # extension -> actor class, for every source
   sources:
-    - path: data                # a folder; only its top level is read
+    - path: data                # a folder
       # load_as: {".csv": "Table"}  # extra mappings for this folder only
+      # depth: 1                    # folder levels to read; null reads every subfolder
+      # include_hidden_folders: false  # also read folders starting with "."
+      # include_hidden_files: false    # also read files starting with "."
 
 steps:
   - name: my_step               # StepRegistry key
