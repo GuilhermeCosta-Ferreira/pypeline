@@ -1,12 +1,13 @@
 # ================================================================
 # 0. Section: IMPORTS
 # ================================================================
+from pathlib import Path
 from dataclasses import replace, field, dataclass
 
 from pypeline.types import FilesMap
 
 from ..actor_io import ActorIORegistry
-from ...domain.pipeline import InputSettings
+from ...domain.pipeline import InputSettings, Source
 from ..temporary_formats import PickleFormat, TempFileFormat
 from ...domain.runner import Loader, ActorRecord, INPUT_STEP
 
@@ -38,7 +39,7 @@ class FileLoader(Loader):
         return replace(actor, object=obj)
 
     def files(self, input_settings: InputSettings) -> FilesMap:
-        """Only the top level of each source is listed; files whose extension is not
+        """Each source is listed down to its `depth`; files whose extension is not
         mapped are skipped."""
         files: FilesMap = []
         for source in input_settings.sources:
@@ -46,7 +47,28 @@ class FileLoader(Loader):
             load_as = {**input_settings.load_as, **source.load_as}
 
             # 2. Keeps only files with a mapped extension
-            for path in sorted(source.path.iterdir()):
-                if path.is_file() and path.suffix in load_as:
+            for path in _list_files(source):
+                if path.suffix in load_as:
                     files.append((load_as[path.suffix], path))
         return files
+
+
+# ──────────────────────────────────────────────────────
+# 1.1 Subsection: Private Helper Functions
+# ──────────────────────────────────────────────────────
+def _list_files(source: Source) -> list[Path]:
+    files: list[Path] = []
+    for root, dirs, names in source.path.walk():
+        # 1. Stops descending once the depth limit is reached
+        level = len(root.relative_to(source.path).parts) + 1
+        if source.depth is not None and level >= source.depth:
+            dirs.clear()
+
+        # 2. Drops hidden entries; editing `dirs` in place prunes the walk
+        if not source.include_hidden_folders:
+            dirs[:] = [d for d in dirs if not d.startswith(".")]
+        if not source.include_hidden_files:
+            names = [n for n in names if not n.startswith(".")]
+
+        files.extend(root / name for name in names)
+    return sorted(files)
